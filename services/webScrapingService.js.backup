@@ -1,0 +1,38 @@
+// BACKUP - Original web scraping service
+// This file has been backed up due to copyright concerns
+// Web scraping of copyrighted content has been disabled
+
+const axios = require('axios');
+const cheerio = require('cheerio');
+const fs = require('fs');
+const path = require('path');
+const News = require('../models/News');
+
+class WebScrapingService {
+  constructor() {
+    this.sources = [];
+    console.log('⚠️ Web scraping disabled for copyright compliance');
+  }
+
+  async scrapeAllSources() {
+    console.log('⚠️ Web scraping is disabled for copyright compliance');
+    console.log('📢 Please use RSS feeds only or create original content');
+    return {
+      success: false,
+      message: 'Web scraping disabled for copyright compliance. Use RSS feeds or original content instead.',
+      totalArticles: 0,
+      sources: []
+    };
+  }
+
+  async scrapeSource(source) {
+    return {
+      success: false,
+      message: 'Web scraping disabled for copyright compliance',
+      articles: [],
+      errors: []
+    };
+  }
+}
+
+module.exports = new WebScrapingService();

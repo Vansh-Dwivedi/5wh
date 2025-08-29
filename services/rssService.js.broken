@@ -1,0 +1,579 @@
+const Parser = require('rss-parser');
+const axios = require('axios');
+const cheerio = require('cheerio');
+const News = require('../models/News');
+const cron = require('node-cron');
+const webScrapingService = require('./webScrapingService');
+
+const parser = new Parser({
+  customFields: {
+    item: ['media:content', 'media:thumbnail', 'enclosure']
+  }
+});
+
+// RSS Feed URLs - Only Google News RSS (Fair Use)
+const RSS_FEEDS = [
+  // Google News RSS - Fair use for aggregation
+  {
+    name: 'Google News - Punjabi (India)',
+    url: 'https://news.google.com/rss?hl=pa&gl=IN&ceid=IN:pa',
+    category: 'punjabi-news'
+  },
+  {
+    name: 'Google News - Punjabi (Canada)',
+    url: 'https://news.google.com/rss?hl=pa&gl=CA&ceid=CA:pa',
+    category: 'punjabi-canada'
+  },
+  {
+    name: 'Google News - Punjab India',
+    url: 'https://news.google.com/rss/search?q=Punjab+India+Punjabi&hl=pa&gl=IN&ceid=IN:pa',
+    category: 'punjab-india'
+  },
+  {
+    name: 'Google News - Sikh Community',
+    url: 'https://news.google.com/rss/search?q=Sikh+Gurdwara+Punjab&hl=en&gl=IN&ceid=IN:en',
+    category: 'sikh-community'
+  }
+  // NOTE: Only using RSS feeds for fair use compliance
+  // Direct web scraping has been disabled to respect copyrights
+];
+
+// Function to get Google News logo for all articles
+function getGoogleNewsLogo() {
+  return {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Google_News_icon.svg/512px-Google_News_icon.svg.png',
+    alt: 'Google News',
+    caption: 'Source: Google News'
+  };
+}
+    
+    const $ = cheerio.load(response.data);
+    
+    // Try to find meta property images first
+    let imageUrl = $('meta[property="og:image"]').attr('content') ||
+                   $('meta[name="twitter:image"]').attr('content') ||
+                   $('meta[property="og:image:url"]').attr('content') ||
+                   $('meta[name="twitter:image:src"]').attr('content');
+    
+    // Clean up the image URL
+    if (imageUrl) {
+      if (imageUrl.startsWith('//')) {
+        imageUrl = 'https:' + imageUrl;
+      } else if (imageUrl.startsWith('/')) {
+        const urlObj = new URL(url);
+        imageUrl = urlObj.origin + imageUrl;
+      }
+      
+      // Enhanced filter for generic logos and unwanted images
+      const unwantedPatterns = [
+        'google', 'logo', 'favicon', 'icon', 'avatar', 'profile',
+        'tracking', 'pixel', 'placeholder', 'default', 'blank',
+        'no-image', 'noimage', 'missing', 'error', 'broken',
+        'cbc.ca/grc/img', 'ctv.ca/img', 'npr.org/assets',
+        'jagbani.com/logo', 'ajitweekly.com/logo', 'punjabkesari.in/logo',
+        'tribuneindia.com/logo', 'dainiksaverasamachar.com/logo',
+        'googleusercontent.com', 'googlenews', 'gstatic.com',
+        '1x1.', 'tracking.', 'pixel.', '0x0.', 'spacer.',
+        'transparent.', 'clear.', 'invisible.'
+      ];
+      
+      const isUnwantedImage = unwantedPatterns.some(pattern => 
+        imageUrl.toLowerCase().includes(pattern)
+      );
+      
+      // Check for minimum image dimensions in URL (some services include dimensions)
+      const dimensionMatch = imageUrl.match(/(\d+)x(\d+)/);
+      const hasGoodDimensions = !dimensionMatch || 
+        (parseInt(dimensionMatch[1]) >= 200 && parseInt(dimensionMatch[2]) >= 150);
+      
+      // Validate that it's a good image URL
+      if (imageUrl && !isUnwantedImage && hasGoodDimensions &&
+          (imageUrl.includes('.jpg') || imageUrl.includes('.jpeg') || 
+           imageUrl.includes('.png') || imageUrl.includes('.webp'))) {
+        
+        // Additional check - try to validate image size if possible
+        try {
+          const response = await axios.head(imageUrl, { timeout: 5000 });
+          const contentLength = parseInt(response.headers['content-length'] || '0');
+          const contentType = response.headers['content-type'] || '';
+          
+          // Skip very small images (likely logos/icons) or non-image content
+          if (contentLength > 5000 && contentType.startsWith('image/')) {
+            return imageUrl;
+          }
+        } catch (err) {
+          // If we can't validate, use the image anyway
+          return imageUrl;
+        }
+      }
+    }
+    
+    // If no good meta images, try to find article images in content
+    if (!imageUrl) {
+      const images = $('img');
+      for (let i = 0; i < images.length; i++) {
+        const img = $(images[i]);
+        const src = img.attr('src') || img.attr('data-src') || img.attr('data-lazy-src');
+        if (src && (src.includes('http') || src.startsWith('//'))) {
+          // Check if image seems large enough and not a logo
+          const width = parseInt(img.attr('width')) || 0;
+          const height = parseInt(img.attr('height')) || 0;
+          const alt = img.attr('alt') || '';
+          const className = img.attr('class') || '';
+          
+          // Skip small icons, logos, or tracking pixels
+          if (width > 0 && width < 300 || height > 0 && height < 200 || 
+              alt.toLowerCase().includes('logo') || 
+              alt.toLowerCase().includes('icon') ||
+              className.toLowerCase().includes('logo') ||
+              src.includes('tracking') ||
+              src.includes('pixel') ||
+              src.includes('favicon') ||
+              src.includes('advertisement') ||
+              src.includes('ad-') ||
+              alt.toLowerCase().includes('advertisement')) {
+            continue;
+          }
+          
+          imageUrl = src.startsWith('//') ? 'https:' + src : 
+                    src.startsWith('/') ? new URL(url).origin + src : src;
+          
+          // Additional check for unwanted images
+          const unwantedPatterns = [
+            'google', 'logo', 'favicon', 'icon', 'avatar', 'profile',
+            'tracking', 'pixel', 'placeholder', 'default', 'advertisement',
+            'jagbani.com/logo', 'ajitweekly.com/logo', 'punjabkesari.in/logo',
+            'indianexpress.com/logo', 'newindianexpress.com/logo', 
+            'timesofindia.com/logo', 'thehindu.com/logo', 'hindustantimes.com/logo',
+            'ndtv.com/logo', 'news18.com/logo', 'indiatoday.in/logo',
+            'deccanherald.com/logo', 'tribuneindia.com/logo'
+// Function to get Google News logo for all articles
+function getGoogleNewsLogo() {
+  return {
+    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Google_News_icon.svg/512px-Google_News_icon.svg.png',
+    alt: 'Google News',
+    caption: 'Source: Google News'
+  };
+}
+
+// Function to get fallback image based on category
+function getCategoryFallbackImage(category, articleIndex = 0) {
+  const fallbackImages = {
+    'punjabi-news': [
+      'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1609178397585-b61d2500b58e?w=800&h=400&fit=crop'
+    ],
+    'punjabi-canada': [
+      'https://images.unsplash.com/photo-1503614472-8c93d56cd893?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1519832979-6fa011b87667?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1551808525-51a94da548ce?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&h=400&fit=crop'
+    ],
+    'punjab-india': [
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1518001589401-1743b61d1def?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1512813195386-6cf811ad3542?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=800&h=400&fit=crop'
+    ],
+    'punjab-canada': [
+      'https://images.unsplash.com/photo-1503614472-8c93d56cd893?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1519832979-6fa011b87667?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1551808525-51a94da548ce?w=800&h=400&fit=crop'
+    ],
+    'sikh-community': [
+      'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1551808525-51a94da548ce?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800&h=400&fit=crop'
+    ],
+    'punjabi-culture': [
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1551808525-51a94da548ce?w=800&h=400&fit=crop'
+    ],
+    'punjabi-politics': [
+      'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=400&fit=crop'
+    ],
+    'punjabi-sports': [
+      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop'
+    ]
+  };
+  
+  const categoryImages = fallbackImages[category] || fallbackImages['punjabi-news'];
+  return categoryImages[articleIndex % categoryImages.length];
+}
+
+// Function to generate a unique slug
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim('-'); // Remove leading/trailing hyphens
+}
+
+// Function to fetch and parse RSS feed
+async function fetchRSSFeed(feedConfig) {
+  try {
+    console.log(`Fetching RSS feed: ${feedConfig.name}`);
+    const feed = await parser.parseURL(feedConfig.url);
+    
+    const articles = [];
+    
+    const feedItems = feed.items.slice(0, 10); // Limit to 10 articles per feed
+    for (let articleIndex = 0; articleIndex < feedItems.length; articleIndex++) {
+      const item = feedItems[articleIndex];
+      try {
+        // Check if article already exists
+        const existingArticle = await News.findOne({
+          $or: [
+            { originalUrl: item.link },
+            { title: item.title }
+          ]
+        });
+        
+        if (existingArticle) {
+          console.log(`Article already exists: ${item.title}`);
+          continue;
+        }
+        
+        // Extract image from the article
+        let imageUrl = null;
+        
+        // Try to get image from RSS feed first
+        if (item['media:content'] && item['media:content'].$ && item['media:content'].$.url) {
+          imageUrl = item['media:content'].$.url;
+        } else if (item['media:thumbnail'] && item['media:thumbnail'].$ && item['media:thumbnail'].$.url) {
+          imageUrl = item['media:thumbnail'].$.url;
+        } else if (item.enclosure && item.enclosure.type && item.enclosure.type.startsWith('image/')) {
+          imageUrl = item.enclosure.url;
+        } else if (item.image && item.image.url) {
+          imageUrl = item.image.url;
+        }
+        
+        // Clean up RSS image URL and filter out unwanted images
+        if (imageUrl) {
+          if (imageUrl.startsWith('//')) {
+            imageUrl = 'https:' + imageUrl;
+          }
+          
+          // Enhanced filter for Google News logos and other unwanted images
+          const unwantedImagePatterns = [
+            'google.com/logos',
+            'gstatic.com',
+            'googleusercontent.com',
+            'googlenews.com',
+            'news.google.com',
+            'logo',
+            'favicon',
+            'default',
+            'placeholder',
+            'blank',
+            'no-image',
+            'noimage',
+            'missing',
+            'error',
+            'broken',
+            'tracking',
+            'pixel',
+            '1x1.',
+            '0x0.',
+            'spacer.',
+            'transparent.',
+            'clear.',
+            'invisible.'
+          ];
+          
+          const hasUnwantedPattern = unwantedImagePatterns.some(pattern => 
+            imageUrl.toLowerCase().includes(pattern)
+          );
+          
+          // Check image dimensions in URL
+          const dimensionMatch = imageUrl.match(/(\d+)x(\d+)/);
+          const hasGoodDimensions = !dimensionMatch || 
+            (parseInt(dimensionMatch[1]) >= 300 && parseInt(dimensionMatch[2]) >= 200);
+          
+          // Validate image URL and size
+          if (hasUnwantedPattern || !hasGoodDimensions) {
+            console.log(`🚫 Filtered out bad image: ${imageUrl}`);
+            imageUrl = null; // Remove bad image
+          } else {
+            // Try to validate the image by checking headers
+            try {
+              const response = await axios.head(imageUrl, { timeout: 5000 });
+              const contentLength = parseInt(response.headers['content-length'] || '0');
+              const contentType = response.headers['content-type'] || '';
+              
+              // Skip very small images (likely logos/icons)
+              if (contentLength < 5000 || !contentType.startsWith('image/')) {
+                console.log(`🚫 Image too small or invalid type: ${imageUrl}`);
+                imageUrl = null;
+              }
+            } catch (err) {
+              console.log(`⚠️ Could not validate image: ${imageUrl}`);
+              // Keep the image URL anyway, but it might be processed later
+            }
+          }
+        }
+        
+        // If no good image from RSS, try to extract from article URL
+        if (!imageUrl && item.link) {
+          console.log(`🔍 Trying to extract image from article: ${item.title.substring(0, 30)}...`);
+          imageUrl = await extractImageFromUrl(item.link);
+        }
+        
+        // Use category-based fallback image if no good image found
+        if (!imageUrl) {
+          imageUrl = getCategoryFallbackImage(feedConfig.category, articleIndex);
+        }
+        
+        // Create slug (using cleaned title)
+        // Clean up title to remove channel/source names and improve quality
+        let cleanTitle = item.title
+          .replace(/\s*-\s*(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Times of India|The Hindu|Indian Express|The Indian Express|The New Indian Express|Hindustan Times|NDTV|ANI|Reuters India|Associated Press|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|Dainik Bhaskar|Amar Ujala|Dainik Jagran|Tribune India|Deccan Herald|News18|India Today|IANS|PTI)\s*(News|news)?.*$/i, '')
+          .replace(/\s*\|\s*(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*$/i, '')
+          .replace(/\s*–\s*(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*$/i, '')
+          .replace(/\s*:\s*(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*$/i, '')
+          .replace(/\s*by\s+(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*$/i, '')
+          .replace(/\s*via\s+(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*$/i, '')
+          .replace(/\s*\(\s*(CTV|CBC|NPR|DW|BBC|CNN|Reuters|AP|AFP|PTI|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today).*\)\s*$/i, '')
+          .replace(/\s*,\s*(The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today|Jagbani|Ajit|Punjab Kesari)\s*$/i, '')
+          .trim();
+        
+        // Also remove source names from the beginning of titles
+        cleanTitle = cleanTitle
+          .replace(/^(The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN|DW|NPR|CBC|CTV):\s*/i, '')
+          .replace(/^(The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN|DW|NPR|CBC|CTV)\s*\|\s*/i, '')
+          .replace(/^(The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN|DW|NPR|CBC|CTV)\s*-\s*/i, '')
+          .replace(/^(The Indian Express|The New Indian Express|Times of India|The Hindu|Indian Express|Tribune India|Deccan Herald|News18|India Today|Jagbani|Ajit|Punjab Kesari|Punjabi Tribune|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN|DW|NPR|CBC|CTV)\s+/i, '')
+          .trim();
+        
+        // Remove any trailing punctuation that might be left
+        cleanTitle = cleanTitle.replace(/[\-–|:,\s]+$/, '').trim();
+        
+        // Final cleanup - remove any remaining source credits at the end
+        cleanTitle = cleanTitle
+          .replace(/\s*\(.*?(Express|Hindu|Times|Tribune|Jagbani|Kesari|News|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN).*?\)\s*$/i, '')
+          .replace(/\s*\[.*?(Express|Hindu|Times|Tribune|Jagbani|Kesari|News|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN).*?\]\s*$/i, '')
+          .replace(/\s*\{.*?(Express|Hindu|Times|Tribune|Jagbani|Kesari|News|NDTV|ANI|PTI|Reuters|AP|AFP|BBC|CNN).*?\}\s*$/i, '')
+          .trim();
+        
+        // Skip if title becomes too short after cleaning
+        if (cleanTitle.length < 10) {
+          console.log(`Skipping article with short title after cleanup: ${item.title}`);
+          continue;
+        }
+        
+        // Additional filtering for non-Punjabi content
+        const nonPunjabiIndicators = [
+          /\b(biden|trump|ukraine|russia|china|covid|vaccine|climate|brexit|election|supreme court|white house)\b/i,
+          /\b(hollywood|bollywood|cryptocurrency|bitcoin|stocks|nasdaq|dow jones|fed|federal reserve)\b/i,
+          /\b(world news|international|global|european|american|australian)\b/i
+        ];
+        
+        const titleAndContent = (cleanTitle + ' ' + (item.contentSnippet || item.summary || item.description || '')).toLowerCase();
+        const isProbablyNonPunjabi = nonPunjabiIndicators.some(pattern => pattern.test(titleAndContent));
+        
+        if (isProbablyNonPunjabi && !titleAndContent.includes('punjab') && !titleAndContent.includes('sikh') && !titleAndContent.includes('canada')) {
+          console.log(`Skipping non-Punjabi content: ${cleanTitle}`);
+          continue;
+        }
+        
+        const slug = generateSlug(cleanTitle);
+        
+        // Ensure slug is unique
+        let uniqueSlug = slug;
+        let counter = 1;
+        while (await News.findOne({ slug: uniqueSlug })) {
+          uniqueSlug = `${slug}-${counter}`;
+          counter++;
+        }
+        
+        // Clean and prepare content
+        const content = item.contentSnippet || item.summary || item.description || '';
+        
+        const article = {
+          title: cleanTitle,
+          slug: uniqueSlug,
+          headline: cleanTitle, // Use cleaned title as headline
+          content: content,
+          excerpt: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
+          category: feedConfig.category,
+          rssAuthor: 'RSS Feed', // Use rssAuthor field instead of author
+          status: 'published',
+          publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+          source: feedConfig.name,
+          originalUrl: item.link,
+          featuredImage: imageUrl ? { url: imageUrl, alt: cleanTitle } : undefined,
+          tags: [feedConfig.category, 'rss-feed', 'google-news'],
+          seo: {
+            metaTitle: item.title,
+            metaDescription: content.substring(0, 160),
+            keywords: [feedConfig.category, 'news', 'latest news']
+          }
+        };
+        
+        articles.push(article);
+      } catch (itemError) {
+        console.error(`Error processing item: ${item.title}`, itemError.message);
+      }
+    }
+    
+    return articles;
+  } catch (error) {
+    console.error(`Error fetching RSS feed ${feedConfig.name}:`, error.message);
+    return [];
+  }
+}
+
+// Function to fetch all RSS feeds and save to database
+async function fetchAllRSSFeeds() {
+  try {
+    console.log('Starting RSS feed fetch...');
+    let totalArticles = 0;
+    
+    for (const feedConfig of RSS_FEEDS) {
+      const articles = await fetchRSSFeed(feedConfig);
+      
+      if (articles.length > 0) {
+        try {
+          await News.insertMany(articles);
+          totalArticles += articles.length;
+          console.log(`Saved ${articles.length} articles from ${feedConfig.name}`);
+        } catch (dbError) {
+          console.error(`Error saving articles from ${feedConfig.name}:`, dbError.message);
+        }
+      }
+      
+      // Add delay between feeds to be respectful
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
+    console.log(`RSS feed fetch completed. Total new articles: ${totalArticles}`);
+    return { success: true, totalArticles };
+  } catch (error) {
+    console.error('Error in fetchAllRSSFeeds:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Combined function that uses both RSS and Web Scraping
+async function fetchAllNews() {
+  try {
+    console.log('🚀 Starting combined news fetch (RSS + Web Scraping)...');
+    
+    const results = {
+      rss: { articles: 0, success: false },
+      scraping: { articles: 0, success: false },
+      total: 0
+    };
+    
+    // 1. Fetch RSS feeds first (faster)
+    try {
+      console.log('📡 Fetching RSS feeds...');
+      const rssResult = await fetchAllRSSFeeds();
+      results.rss.success = rssResult.success;
+      results.rss.articles = rssResult.totalArticles || 0;
+    } catch (error) {
+      console.error('❌ RSS fetch failed:', error.message);
+    }
+    
+    // 2. Then do web scraping (more detailed)
+    try {
+      console.log('🕸️  Starting web scraping...');
+      const scrapingResult = await webScrapingService.fetchLatestNews();
+      results.scraping.success = true;
+      results.scraping.articles = scrapingResult.saved || 0;
+    } catch (error) {
+      console.error('❌ Web scraping failed:', error.message);
+    }
+    
+    results.total = results.rss.articles + results.scraping.articles;
+    
+    console.log(`✅ Combined news fetch completed:`);
+    console.log(`   📡 RSS Articles: ${results.rss.articles}`);
+    console.log(`   🕸️  Scraped Articles: ${results.scraping.articles}`);
+    console.log(`   📰 Total New Articles: ${results.total}`);
+    
+    return results;
+    
+  } catch (error) {
+    console.error('❌ Combined news fetch failed:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+// Function to start enhanced news scheduler
+function startNewsScheduler() {
+  // Run every 2 hours for comprehensive news fetch
+  cron.schedule('0 */2 * * *', () => {
+    console.log('🕒 Running scheduled news fetch (RSS + Web Scraping)...');
+    fetchAllNews();
+  });
+  
+  // Quick RSS-only check every 30 minutes
+  cron.schedule('*/30 * * * *', () => {
+    console.log('🕒 Running quick RSS check...');
+    fetchAllRSSFeeds();
+  });
+  
+  console.log('📅 Enhanced news scheduler started:');
+  console.log('   - Full news fetch (RSS + Scraping): Every 2 hours');
+  console.log('   - Quick RSS check: Every 30 minutes');
+}
+
+// Function to start RSS feed scheduler (legacy)
+function startRSSScheduler() {
+  // Run every 2 hours
+  cron.schedule('0 */2 * * *', () => {
+    console.log('Running scheduled RSS feed fetch...');
+    fetchAllRSSFeeds();
+  });
+  
+  console.log('RSS feed scheduler started - will run every 2 hours');
+}
+
+// Function to manually trigger RSS feed fetch
+async function manualRSSFetch() {
+  return await fetchAllRSSFeeds();
+}
+
+// Function to manually trigger combined news fetch
+async function manualNewsFetch() {
+  return await fetchAllNews();
+}
+
+// Function to manually trigger web scraping only
+async function manualWebScraping() {
+  return await webScrapingService.fetchLatestNews();
+}
+
+module.exports = {
+  fetchAllRSSFeeds,
+  fetchAllNews,
+  startRSSScheduler,
+  startNewsScheduler,
+  manualRSSFetch,
+  manualNewsFetch,
+  manualWebScraping,
+  webScrapingService,
+  RSS_FEEDS
+};
