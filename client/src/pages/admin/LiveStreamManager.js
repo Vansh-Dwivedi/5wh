@@ -67,17 +67,33 @@ const LiveStreamManager = () => {
   const fetchStreams = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/live');
+      const response = await fetch('http://localhost:5000/api/live');
+      console.log('Fetch streams response status:', response.status);
+      
+      if (!response.ok) {
+        if (response.status === 429) {
+          console.error('Rate limited. Stopping automatic refresh.');
+          return; // Don't retry if rate limited
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      console.log('Streams data:', data);
       
       if (data.success) {
         setStreams(data.data);
       } else {
+        console.error('API returned unsuccessful response:', data);
         toast.error('Failed to fetch live streams');
       }
     } catch (error) {
       console.error('Error fetching streams:', error);
-      toast.error('Error fetching live streams');
+      
+      // Don't show error toast on rate limiting
+      if (!error.message.includes('429')) {
+        toast.error(`Error fetching live streams: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -140,7 +156,7 @@ const LiveStreamManager = () => {
   const handleSubmit = async () => {
     try {
       const method = editingStream ? 'PUT' : 'POST';
-      const url = editingStream ? `/api/live/${editingStream.id}` : '/api/live';
+      const url = editingStream ? `http://localhost:5000/api/live/${editingStream.id}` : 'http://localhost:5000/api/live';
       
       const submitData = {
         ...formData,
@@ -151,23 +167,28 @@ const LiveStreamManager = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(submitData)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (data.success) {
         toast.success(editingStream ? 'Stream updated successfully' : 'Stream created successfully');
         fetchStreams();
         handleCloseDialog();
       } else {
+        console.error('API Error:', data);
         toast.error(data.message || 'Operation failed');
       }
     } catch (error) {
       console.error('Error saving stream:', error);
-      toast.error('Error saving stream');
+      toast.error(`Error saving stream: ${error.message}`);
     }
   };
 
@@ -177,10 +198,10 @@ const LiveStreamManager = () => {
     }
 
     try {
-      const response = await fetch(`/api/live/${streamId}`, {
+      const response = await fetch(`http://localhost:5000/api/live/${streamId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
@@ -200,11 +221,11 @@ const LiveStreamManager = () => {
 
   const handleToggleLive = async (stream) => {
     try {
-      const response = await fetch(`/api/live/${stream.id}`, {
+      const response = await fetch(`http://localhost:5000/api/live/${stream.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           isLive: !stream.isLive

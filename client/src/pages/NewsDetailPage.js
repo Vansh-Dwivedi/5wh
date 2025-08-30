@@ -100,12 +100,15 @@ const NewsDetailPage = () => {
     try {
       setLoading(true);
       const response = await api.get(`/news/${slug}`);
-      setArticle(response.data);
+      
+      // Apply source filtering to the article
+      const cleanedArticle = cleanArticleSource(response.data);
+      setArticle(cleanedArticle);
       
       // Debug: Log the article data to see what content is available
-      console.log('Article data:', response.data);
-      console.log('Article content:', response.data.content);
-      console.log('Article excerpt:', response.data.excerpt);
+      console.log('Article data:', cleanedArticle);
+      console.log('Article content:', cleanedArticle.content);
+      console.log('Article excerpt:', cleanedArticle.excerpt);
       
       // Fetch related news
       if (response.data.category) {

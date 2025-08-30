@@ -45,8 +45,36 @@ const cleanArticleSource = (article) => {
   if (!article) return article;
   
   const cleanedArticle = article.toObject ? article.toObject() : article;
+  
+  // Clean title to remove source names
+  let cleanTitle = cleanedArticle.title || '';
+  const titleSourcePatterns = [
+    /[-–—]\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+    /\s+(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+    /\b(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi
+  ];
+  
+  titleSourcePatterns.forEach(pattern => {
+    cleanTitle = cleanTitle.replace(pattern, '').trim();
+  });
+  
+  // Clean content to remove source attributions
+  let cleanContent = cleanedArticle.content || '';
+  const contentSourcePatterns = [
+    /\s*[-–—]\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+    /\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+    /\(source:.*?\)/gi,
+    /source:.*?(?=\.|$)/gi
+  ];
+  
+  contentSourcePatterns.forEach(pattern => {
+    cleanContent = cleanContent.replace(pattern, '').trim();
+  });
+  
   return {
     ...cleanedArticle,
+    title: cleanTitle,
+    content: cleanContent,
     source: filterSourceName(cleanedArticle.source)
   };
 };
@@ -140,7 +168,10 @@ const getNewsBySlug = async (req, res) => {
     news.views += 1;
     await news.save();
     
-    res.json(news);
+    // Apply source filtering before sending to frontend
+    const filteredNews = cleanArticleSource(news);
+    
+    res.json(filteredNews);
   } catch (error) {
     console.error('Get news by slug error:', error);
     res.status(500).json({ message: 'Server error' });
