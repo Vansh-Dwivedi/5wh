@@ -1,4 +1,46 @@
 const Parser = require('rss-parser');
+
+// Utility to filter out RSS feed source names
+// To add more sources to filter, simply add them to the rssSourcesFilter array below
+const filterSourceName = (source) => {
+  if (!source) return '';
+  
+  // List of RSS feed sources to filter out
+  // Add any new RSS feed provider names here that you want to hide from the UI
+  const rssSourcesFilter = [
+    'Google News',
+    'Jagbani',
+    'BBC News',
+    'CNN',
+    'Reuters',
+    'AP News',
+    'Times of India',
+    'Hindustan Times',
+    'Indian Express',
+    'NDTV',
+    'Zee News',
+    'Aaj Tak',
+    'ABP News',
+    'News18',
+    'India Today',
+    'The Hindu',
+    'Economic Times',
+    'Business Standard',
+    'Mint',
+    'Dainik Bhaskar',
+    'Dainik Jagran',
+    'Navbharat Times'
+  ];
+  
+  // Check if the source should be filtered
+  const shouldFilter = rssSourcesFilter.some(filterSource => 
+    source.toLowerCase().includes(filterSource.toLowerCase()) ||
+    filterSource.toLowerCase().includes(source.toLowerCase())
+  );
+  
+  // Return empty string if should be filtered, otherwise return original source
+  return shouldFilter ? '' : source;
+};
 const axios = require('axios');
 const cheerio = require('cheerio');
 const News = require('../models/News');
@@ -132,7 +174,7 @@ async function fetchRSSFeed(feedConfig) {
           rssAuthor: 'Google News', // Use rssAuthor field instead of author
           status: 'published',
           publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
-          source: feedConfig.name,
+          source: filterSourceName(feed.title) || 'Unknown Source',
           tags: [feedConfig.category, 'rss', 'google-news'],
           language: 'punjabi',
           seo: {

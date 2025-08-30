@@ -1,4 +1,63 @@
 const News = require('../models/News');
+
+// Utility to filter out RSS feed source names
+const filterSourceName = (source) => {
+  if (!source) return '';
+  
+  // List of RSS feed sources to filter out
+  const rssSourcesFilter = [
+    'Google News',
+    'Jagbani',
+    'BBC News',
+    'CNN',
+    'Reuters',
+    'AP News',
+    'Times of India',
+    'Hindustan Times',
+    'Indian Express',
+    'NDTV',
+    'Zee News',
+    'Aaj Tak',
+    'ABP News',
+    'News18',
+    'India Today',
+    'The Hindu',
+    'Economic Times',
+    'Business Standard',
+    'Mint',
+    'Dainik Bhaskar',
+    'Dainik Jagran',
+    'Navbharat Times'
+  ];
+  
+  // Check if the source should be filtered
+  const shouldFilter = rssSourcesFilter.some(filterSource => 
+    source.toLowerCase().includes(filterSource.toLowerCase()) ||
+    filterSource.toLowerCase().includes(source.toLowerCase())
+  );
+  
+  // Return empty string if should be filtered, otherwise return original source
+  return shouldFilter ? '' : source;
+};
+
+// Function to clean article data by filtering source
+const cleanArticleSource = (article) => {
+  if (!article) return article;
+  
+  const cleanedArticle = article.toObject ? article.toObject() : article;
+  return {
+    ...cleanedArticle,
+    source: filterSourceName(cleanedArticle.source)
+  };
+};
+
+// Function to clean array of articles
+const cleanArticlesSources = (articles) => {
+  if (!Array.isArray(articles)) return articles;
+  
+  return articles.map(cleanArticleSource);
+};
+
 const { processUploadedImage } = require('../utils/imageProcessor');
 
 // Get all news with pagination and filtering

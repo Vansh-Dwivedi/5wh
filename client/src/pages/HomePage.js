@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { cleanArticlesSources, SourceDisplay } from '../services/api';
 import {
   Box,
   Container,

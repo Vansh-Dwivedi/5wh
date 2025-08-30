@@ -1,6 +1,81 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Utility to filter out RSS feed source names
+export const filterSourceName = (source) => {
+  if (!source) return '';
+  
+  // List of RSS feed sources to filter out
+  const rssSourcesFilter = [
+    'Google News',
+    'Jagbani',
+    'BBC News',
+    'CNN',
+    'Reuters',
+    'AP News',
+    'Times of India',
+    'Hindustan Times',
+    'Indian Express',
+    'NDTV',
+    'Zee News',
+    'Aaj Tak',
+    'ABP News',
+    'News18',
+    'India Today',
+    'The Hindu',
+    'Economic Times',
+    'Business Standard',
+    'Mint',
+    'Dainik Bhaskar',
+    'Dainik Jagran',
+    'Navbharat Times'
+  ];
+  
+  // Check if the source should be filtered
+  const shouldFilter = rssSourcesFilter.some(filterSource => 
+    source.toLowerCase().includes(filterSource.toLowerCase()) ||
+    filterSource.toLowerCase().includes(source.toLowerCase())
+  );
+  
+  // Return empty string if should be filtered, otherwise return original source
+  return shouldFilter ? '' : source;
+};
+
+// Function to clean article data by filtering source
+export const cleanArticleSource = (article) => {
+  if (!article) return article;
+  
+  return {
+    ...article,
+    source: filterSourceName(article.source)
+  };
+};
+
+// Function to clean array of articles
+export const cleanArticlesSources = (articles) => {
+  if (!Array.isArray(articles)) return articles;
+  
+  return articles.map(cleanArticleSource);
+};
+
+// React component for displaying filtered sources
+export const SourceDisplay = ({ source, variant = "caption", color = "text.secondary", prefix = "", children, ...props }) => {
+  // Apply source filtering
+  const filteredSource = filterSourceName(source);
+  
+  // Don't render anything if source is filtered out
+  if (!filteredSource || filteredSource.trim() === '') {
+    return null;
+  }
+  
+  // Return the children with the filtered source, or just text
+  if (children) {
+    return children(filteredSource);
+  }
+  
+  return filteredSource;
+};
+
+const API_BASE_URL = 'http://localhost:5000/api';
 export const MEDIA_BASE_URL = process.env.REACT_APP_MEDIA_URL || 'http://localhost:5000';
 
 // Create axios instance
