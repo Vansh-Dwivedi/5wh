@@ -17,6 +17,7 @@ import AudioPage from './pages/AudioPage';
 import AudioDetailPage from './pages/AudioDetailPage';
 import VideosPage from './pages/VideosPage';
 import VideoDetailPage from './pages/VideoDetailPage';
+import LivePage from './pages/LivePage';
 import OpinionPage from './pages/OpinionPage';
 import SantokhSinghDhirPage from './pages/SantokhSinghDhirPage';
 import ContactPage from './pages/ContactPage';
@@ -54,6 +55,7 @@ function App() {
                     <Route path="/audio/:slug" element={<AudioDetailPage />} />
                     <Route path="/videos" element={<VideosPage />} />
                     <Route path="/videos/:slug" element={<VideoDetailPage />} />
+                    <Route path="/live" element={<LivePage />} />
                     <Route path="/5wh-opinion" element={<OpinionPage />} />
                     <Route path="/santokh-singh-dhir" element={<SantokhSinghDhirPage />} />
                     <Route path="/contact" element={<ContactPage />} />

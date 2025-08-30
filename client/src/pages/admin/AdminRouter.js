@@ -9,6 +9,7 @@ import ManageNews from './ManageNews';
 import ManagePodcasts from './ManagePodcasts';
 import ManageVideos from './ManageVideos';
 import ManageAdvertisers from './ManageAdvertisers';
+import LiveStreamManager from './LiveStreamManager';
 import CreateNews from './CreateNews';
 import CreatePodcast from './CreatePodcast';
 import CreateVideo from './CreateVideo';
@@ -49,6 +50,7 @@ const AdminRouter = () => {
       <Route path="/news" element={<ManageNews />} />
       <Route path="/podcasts" element={<ManagePodcasts />} />
       <Route path="/videos" element={<ManageVideos />} />
+      <Route path="/live-streams" element={<LiveStreamManager />} />
       <Route path="/advertisers" element={<ManageAdvertisers />} />
       <Route path="/news-fetching" element={<NewsFetchingPage />} />
       <Route path="/draft-news" element={<DraftNewsManager />} />

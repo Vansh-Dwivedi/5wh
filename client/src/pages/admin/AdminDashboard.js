@@ -346,6 +346,26 @@ const AdminDashboard = () => {
               }
             />
           </Grid>
+
+          {/* Live Streams Card */}
+          <Grid item xs={12} sm={6} lg={4} xl={2}>
+            <StatCard
+              title="Live Streams"
+              value="Manage"
+              icon={<VideoLibrary />}
+              color="#c41e3a"
+              action={
+                <Button 
+                  size="small" 
+                  variant="outlined"
+                  onClick={() => navigate('/admin/live-streams')}
+                  fullWidth
+                >
+                  Manage Streams
+                </Button>
+              }
+            />
+          </Grid>
         </Grid>
 
         {/* RSS Feed Section */}

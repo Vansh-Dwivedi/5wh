@@ -27,12 +27,17 @@ import {
   ContactMail as ContactIcon,
   Info as AboutIcon,
   Radio as RadioIcon,
+  LiveTv as LiveIcon,
 } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import AudioPlayer from '../AudioPlayer';
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [audioPlayerVisible, setAudioPlayerVisible] = useState(false);
+  const [streamInfo, setStreamInfo] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
@@ -42,6 +47,7 @@ const Header = () => {
     { title: 'News', path: '/news', icon: <NewsIcon /> },
     { title: 'Audio', path: '/audio', icon: <AudioIcon /> },
     { title: 'Videos', path: '/videos', icon: <VideoIcon /> },
+    { title: 'Live', path: '/live', icon: <LiveIcon /> },
     { title: '5WH Opinion', path: '/5wh-opinion', icon: <OpinionIcon /> },
     { title: 'Santokh Singh Dhir', path: '/santokh-singh-dhir', icon: <PersonIcon /> },
     { title: 'Contact', path: '/contact', icon: <ContactIcon /> },
@@ -132,22 +138,22 @@ const Header = () => {
         ))}
       </List>
 
-      {/* Live Radio Button */}
+  {/* ...removed Live Radio button from mobile drawer... */}
+
       <Box sx={{ position: 'absolute', bottom: 20, left: 16, right: 16 }}>
         <Button
           fullWidth
           variant="contained"
-          startIcon={<RadioIcon />}
           sx={{
-            backgroundColor: '#ff6f00',
+            backgroundColor: '#c41e3a',
             '&:hover': {
-              backgroundColor: '#e65100',
+              backgroundColor: '#8b0000',
             },
             borderRadius: 3,
             py: 1.5,
           }}
         >
-          Live Radio
+          Subscribe
         </Button>
       </Box>
     </Box>
@@ -157,7 +163,11 @@ const Header = () => {
     <>
       <AppBar position="sticky" elevation={0}>
         <Container maxWidth="lg">
-          <Toolbar sx={{ minHeight: { xs: 64, md: 70 } }}>
+          <Toolbar sx={{ 
+            minHeight: { xs: 64, md: 70 },
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
             {/* Mobile Menu Button */}
             {isMobile && (
               <IconButton
@@ -229,10 +239,7 @@ const Header = () => {
 
             {/* Subscribe Button - Desktop */}
             {!isMobile && (
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
                 <Button
                   variant="contained"
                   sx={{
@@ -246,16 +253,27 @@ const Header = () => {
                     '&:hover': {
                       backgroundColor: '#8b0000',
                     },
-                    ml: 2,
                   }}
                 >
                   Subscribe
                 </Button>
-              </motion.div>
+              </Box>
             )}
           </Toolbar>
         </Container>
       </AppBar>
+
+      {/* Audio Player */}
+      {streamInfo && (
+        <AudioPlayer
+          streamUrl={streamInfo.streamUrl}
+          stationName={streamInfo.stationName}
+          isVisible={audioPlayerVisible}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          onClose={() => setAudioPlayerVisible(false)}
+        />
+      )}
 
       {/* Mobile Drawer */}
       <Drawer

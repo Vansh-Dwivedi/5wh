@@ -134,6 +134,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/fetch', require('./routes/newsFetch')); // New news fetching routes
 app.use('/api/advertisers', require('./routes/advertisers'));
+app.use('/api/live', require('./routes/live')); // Live streams routes
 
 // Serve React app in production
 if (process.env.NODE_ENV === 'production') {
