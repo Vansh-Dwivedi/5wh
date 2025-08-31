@@ -57,31 +57,35 @@ const ContactPage = () => {
 
   const contactInfo = [
     {
-      icon: <Email />,
+      icon: <Email />, 
       title: "Email",
-      details: "contact@5whmedia.com",
+      details: "fivewhnewsmedia@gmail.com",
       subtitle: "General inquiries and story tips"
     },
     {
       icon: <Phone />,
-      title: "Phone",
-      details: "+1 (555) 123-4567",
-      subtitle: "Monday to Friday, 9 AM - 6 PM"
+      title: "Phone (India)",
+      details: "+91 987-62-97823",
+      subtitle: "Available for WhatsApp & Calls"
+    },
+    {
+      icon: <Phone />,
+      title: "Phone (Canada)",
+      details: "+1 780-243-7033",
+      subtitle: "Available for WhatsApp & Calls"
     },
     {
       icon: <LocationOn />,
-      title: "Address",
-      details: "123 Media Street, News District",
-      subtitle: "City, State 12345"
+      title: "Location",
+      details: "India & Canada",
+      subtitle: "Serving both regions"
     }
   ];
 
   const socialLinks = [
-    { icon: <Facebook />, url: '#', label: 'Facebook', color: '#1877f2' },
-    { icon: <Twitter />, url: '#', label: 'Twitter', color: '#1da1f2' },
-    { icon: <YouTube />, url: '#', label: 'YouTube', color: '#ff0000' },
-    { icon: <Instagram />, url: '#', label: 'Instagram', color: '#e4405f' },
-    { icon: <LinkedIn />, url: '#', label: 'LinkedIn', color: '#0077b5' },
+    { icon: <Facebook />, url: 'https://www.facebook.com/5whmedia/', label: 'Facebook', color: '#1877f2' },
+    { icon: <YouTube />, url: 'https://www.youtube.com/@5wh_media', label: 'YouTube', color: '#ff0000' },
+    { icon: <Instagram />, url: 'https://www.instagram.com/5whmedia/', label: 'Instagram', color: '#e4405f' },
   ];
 
   return (
@@ -236,79 +240,56 @@ const ContactPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {/* Contact Info Cards */}
+              <Grid container spacing={2}>
                 {contactInfo.map((info, index) => (
-                  <Card key={index} sx={{ p: 3, border: '1px solid #e0e0e0' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                      <Box sx={{ 
-                        color: '#c41e3a', 
-                        '& svg': { fontSize: '2rem' } 
-                      }}>
-                        {info.icon}
+                  <Grid item xs={12} sm={6} key={index}>
+                    <Card sx={{ p: 3, border: '1px solid #e0e0e0', height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                        <Box sx={{ color: '#c41e3a', '& svg': { fontSize: '2rem' } }}>
+                          {info.icon}
+                        </Box>
+                        <Box>
+                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                            {info.title}
+                          </Typography>
+                          <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
+                            {info.details}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {info.subtitle}
+                          </Typography>
+                        </Box>
                       </Box>
-                      <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                          {info.title}
-                        </Typography>
-                        <Typography variant="body1" sx={{ fontWeight: 500, mb: 0.5 }}>
-                          {info.details}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {info.subtitle}
-                        </Typography>
-                      </Box>
+                    </Card>
+                  </Grid>
+                ))}
+                <Grid item xs={12}>
+                  <Card sx={{ p: 3, border: '1px solid #e0e0e0' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                      Follow Us
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {socialLinks.map((social, index) => (
+                        <IconButton
+                          key={index}
+                          href={social.url}
+                          target="_blank"
+                          sx={{
+                            color: social.color,
+                            border: `1px solid ${social.color}`,
+                            '&:hover': {
+                              backgroundColor: social.color,
+                              color: 'white',
+                            },
+                          }}
+                        >
+                          {social.icon}
+                        </IconButton>
+                      ))}
                     </Box>
                   </Card>
-                ))}
-
-                {/* Social Media */}
-                <Card sx={{ p: 3, border: '1px solid #e0e0e0' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    Follow Us
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    {socialLinks.map((social, index) => (
-                      <IconButton
-                        key={index}
-                        href={social.url}
-                        target="_blank"
-                        sx={{
-                          color: social.color,
-                          border: `1px solid ${social.color}`,
-                          '&:hover': {
-                            backgroundColor: social.color,
-                            color: 'white',
-                          },
-                        }}
-                      >
-                        {social.icon}
-                      </IconButton>
-                    ))}
-                  </Box>
-                </Card>
-
-                {/* Office Hours */}
-                <Card sx={{ p: 3, border: '1px solid #e0e0e0' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                    Office Hours
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2">Monday - Friday</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>9:00 AM - 6:00 PM</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2">Saturday</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>10:00 AM - 4:00 PM</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2">Sunday</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>Closed</Typography>
-                    </Box>
-                  </Box>
-                </Card>
-              </Box>
+                </Grid>
+              </Grid>
             </motion.div>
           </Grid>
         </Grid>

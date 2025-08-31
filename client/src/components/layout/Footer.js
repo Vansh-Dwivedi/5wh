@@ -24,11 +24,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: <Facebook />, url: '#', label: 'Facebook' },
-    { icon: <Twitter />, url: '#', label: 'Twitter' },
-    { icon: <YouTube />, url: '#', label: 'YouTube' },
-    { icon: <Instagram />, url: '#', label: 'Instagram' },
-    { icon: <LinkedIn />, url: '#', label: 'LinkedIn' },
+    { icon: <Facebook />, url: 'https://www.facebook.com/5whmedia/', label: 'Facebook' },
+    { icon: <YouTube />, url: 'https://www.youtube.com/@5wh_media', label: 'YouTube' },
+    { icon: <Instagram />, url: 'https://www.instagram.com/5whmedia/', label: 'Instagram' },
   ];
 
   const quickLinks = [
@@ -74,21 +72,21 @@ const Footer = () => {
             >
               5WH Media
             </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mb: 3, 
-                opacity: 0.9, 
+            <Typography
+              variant="body2"
+              sx={{
+                mb: 3,
+                opacity: 0.9,
                 lineHeight: 1.6,
                 fontSize: '0.875rem',
                 color: '#cccccc',
               }}
             >
-              Your trusted source for comprehensive news coverage, in-depth analysis, 
-              and multimedia content. Delivering quality journalism with integrity 
+              Your trusted source for comprehensive news coverage, in-depth analysis,
+              and multimedia content. Delivering quality journalism with integrity
               and professionalism since our founding.
             </Typography>
-            
+
             {/* Social Media Links */}
             <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
               {socialLinks.map((social, index) => (
@@ -120,10 +118,10 @@ const Footer = () => {
 
           {/* Quick Links */}
           <Grid item xs={12} sm={6} md={2}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 600, 
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
                 mb: 2,
                 fontSize: '1rem',
                 textTransform: 'uppercase',
@@ -157,10 +155,10 @@ const Footer = () => {
 
           {/* Legal Links */}
           <Grid item xs={12} sm={6} md={2}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 600, 
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
                 mb: 2,
                 fontSize: '1rem',
                 textTransform: 'uppercase',
@@ -194,10 +192,10 @@ const Footer = () => {
 
           {/* Contact Info */}
           <Grid item xs={12} md={4}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 600, 
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
                 mb: 2,
                 fontSize: '1rem',
                 textTransform: 'uppercase',
@@ -209,41 +207,51 @@ const Footer = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Email sx={{ color: '#c41e3a', fontSize: '1.2rem' }} />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
                     color: '#cccccc',
                     fontSize: '0.875rem',
                   }}
                 >
-                  editorial@5whmedia.com
+                  fivewhnewsmedia@gmail.com
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Phone sx={{ color: '#c41e3a', fontSize: '1.2rem' }} />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
                     color: '#cccccc',
                     fontSize: '0.875rem',
                   }}
                 >
-                  +1 (555) 5WH-NEWS
+                  India: +91 987-62-97823
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Phone sx={{ color: '#c41e3a', fontSize: '1.2rem' }} />
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: '#cccccc',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  Canada: +1 780-243-7033
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
                 <LocationOn sx={{ color: '#c41e3a', mt: 0.5, fontSize: '1.2rem' }} />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
                     color: '#cccccc',
                     fontSize: '0.875rem',
                     lineHeight: 1.5,
                   }}
                 >
-                  5WH Media Headquarters<br />
-                  123 Press Boulevard<br />
-                  Media City, MC 12345
+                  India & Canada
                 </Typography>
               </Box>
             </Box>
@@ -264,9 +272,9 @@ const Footer = () => {
             borderTop: '1px solid rgba(255,255,255,0.1)',
           }}
         >
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               color: '#cccccc',
               fontSize: '0.75rem',
               textTransform: 'uppercase',
@@ -275,9 +283,9 @@ const Footer = () => {
           >
             © {currentYear} 5WH Media Corporation. All rights reserved.
           </Typography>
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               color: '#cccccc',
               fontSize: '0.75rem',
               fontStyle: 'italic',
