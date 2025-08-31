@@ -2,6 +2,68 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const News = require('../models/News');
 
+// Function to scrape full article content from URL
+async function scrapeFullArticleContent(url) {
+  try {
+    console.log(`🌐 Attempting to scrape content from: ${url}`);
+    
+    const response = await axios.get(url, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+    
+    const $ = cheerio.load(response.data);
+    
+    // Remove unwanted elements
+    $('script, style, nav, header, footer, aside, .advertisement, .ad, .social-share, .related-articles').remove();
+    
+    // Try different selectors for article content
+    const contentSelectors = [
+      'article p',
+      '.article-content p',
+      '.content p',
+      '.story-content p',
+      '.post-content p',
+      '.entry-content p',
+      '.article-body p',
+      'main p',
+      '.news-content p',
+      'p'
+    ];
+    
+    let fullContent = '';
+    
+    for (const selector of contentSelectors) {
+      const paragraphs = $(selector);
+      if (paragraphs.length > 2) { // Must have at least 3 paragraphs
+        const content = paragraphs.map((i, el) => $(el).text().trim()).get()
+          .filter(text => text.length > 50) // Filter out short paragraphs
+          .slice(0, 10) // Take first 10 meaningful paragraphs
+          .join('\n\n');
+        
+        if (content.length > 300) {
+          fullContent = content;
+          break;
+        }
+      }
+    }
+    
+    if (fullContent) {
+      console.log(`✅ Successfully scraped ${fullContent.length} characters of content`);
+      return fullContent;
+    } else {
+      console.log(`⚠️  Could not extract meaningful content from ${url}`);
+      return null;
+    }
+    
+  } catch (error) {
+    console.error(`❌ Error scraping ${url}:`, error.message);
+    return null;
+  }
+}
+
 // Generate slug from title
 function generateSlug(title) {
   return title
@@ -65,5 +127,6 @@ async function saveArticles(articles) {
 module.exports = {
   fetchLatestNews,
   saveArticles,
-  generateSlug
+  generateSlug,
+  scrapeFullArticleContent
 };

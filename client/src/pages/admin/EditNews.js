@@ -26,7 +26,8 @@ import {
   Preview,
   Image,
   Delete,
-  Add
+  Add,
+  CloudUpload
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -53,7 +54,8 @@ const EditNews = () => {
     featuredImage: {
       url: '',
       alt: '',
-      caption: ''
+      caption: '',
+      file: null
     },
     seo: {
       metaTitle: '',
@@ -64,6 +66,8 @@ const EditNews = () => {
 
   const [newTag, setNewTag] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
 
   const categories = [
     'breaking', 'politics', 'sports', 'entertainment', 
@@ -208,6 +212,102 @@ const EditNews = () => {
       return false;
     }
     return true;
+  };
+
+  // File upload handler
+  const handleFileUpload = async (file, type = 'image') => {
+    if (!file) return null;
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      // Create form data for upload
+      const uploadFormData = new FormData();
+      uploadFormData.append(type, file);
+
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      // Make the actual API call to upload the file
+      const endpoint = type === 'video' ? '/api/upload/video' : '/api/upload/image';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: uploadFormData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      
+      clearInterval(interval);
+      setUploadProgress(100);
+      
+      setTimeout(() => {
+        setUploading(false);
+        setUploadProgress(0);
+      }, 1000);
+
+      return {
+        url: `http://localhost:5000${(result.image || result.video).url}`,
+        name: (result.image || result.video).name,
+        size: (result.image || result.video).size,
+        type: (result.image || result.video).type
+      };
+    } catch (error) {
+      setUploading(false);
+      setUploadProgress(0);
+      console.error('Upload error:', error);
+      throw error;
+    }
+  };
+
+  const handleImageUpload = async (event, imageType = 'featured') => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      const uploadResult = await handleFileUpload(file, 'image');
+      
+      if (imageType === 'featured') {
+        setFormData(prev => ({
+          ...prev,
+          featuredImage: {
+            ...prev.featuredImage,
+            url: uploadResult.url,
+            file: file,
+            alt: prev.featuredImage.alt || prev.title
+          }
+        }));
+      }
+    } catch (err) {
+      setError('Failed to upload image');
+    }
   };
 
   const handleSubmit = async (status = formData.status) => {
@@ -367,13 +467,37 @@ const EditNews = () => {
                 Featured Image
               </Typography>
               
+              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+                <Button
+                  component="label"
+                  variant="outlined"
+                  startIcon={<CloudUpload />}
+                  disabled={uploading}
+                >
+                  Upload Featured Image
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'featured')}
+                  />
+                </Button>
+                
+                {uploading && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} />
+                    <Typography variant="body2">Uploading... {uploadProgress}%</Typography>
+                  </Box>
+                )}
+              </Box>
+              
               <TextField
                 fullWidth
-                label="Image URL"
+                label="Image URL (or upload above)"
                 value={formData.featuredImage.url}
                 onChange={(e) => handleInputChange('featuredImage.url', e.target.value)}
                 margin="normal"
-                helperText="URL of the featured image"
+                helperText="URL of the featured image or upload a file above"
               />
 
               {formData.featuredImage.url && (

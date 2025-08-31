@@ -1,9 +1,52 @@
 const Parser = require('rss-parser');
+
+// Utility to filter out RSS feed source names
+// To add more sources to filter, simply add them to the rssSourcesFilter array below
+const filterSourceName = (source) => {
+  if (!source) return '';
+  
+  // List of RSS feed sources to filter out
+  // Add any new RSS feed provider names here that you want to hide from the UI
+  const rssSourcesFilter = [
+    'Google News',
+    'Jagbani',
+    'BBC News',
+    'CNN',
+    'Reuters',
+    'AP News',
+    'Times of India',
+    'Hindustan Times',
+    'Indian Express',
+    'NDTV',
+    'Zee News',
+    'Aaj Tak',
+    'ABP News',
+    'News18',
+    'India Today',
+    'The Hindu',
+    'Economic Times',
+    'Business Standard',
+    'Mint',
+    'Dainik Bhaskar',
+    'Dainik Jagran',
+    'Navbharat Times'
+  ];
+  
+  // Check if the source should be filtered
+  const shouldFilter = rssSourcesFilter.some(filterSource => 
+    source.toLowerCase().includes(filterSource.toLowerCase()) ||
+    filterSource.toLowerCase().includes(source.toLowerCase())
+  );
+  
+  // Return empty string if should be filtered, otherwise return original source
+  return shouldFilter ? '' : source;
+};
 const axios = require('axios');
 const cheerio = require('cheerio');
 const News = require('../models/News');
 const cron = require('node-cron');
 const webScrapingService = require('./webScrapingService');
+const { scrapeFullArticleContent } = require('./webScrapingService');
 
 const parser = new Parser({
   customFields: {
@@ -87,8 +130,22 @@ async function fetchRSSFeed(feedConfig) {
           continue;
         }
         
-        // Clean title
-        const title = item.title.replace(/[-–—]\s*[^-–—]*$/, '').trim();
+        // Clean title - remove source names and attributions
+        let title = item.title;
+        
+        // List of source patterns to remove from titles
+        const sourcePatterns = [
+          /[-–—]\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+          /\s+(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+          /\b(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+          /[-–—]\s*[^-–—]*$/g // Fallback: remove anything after dash at end
+        ];
+        
+        // Apply all patterns to clean the title
+        sourcePatterns.forEach(pattern => {
+          title = title.replace(pattern, '').trim();
+        });
+        
         if (title.length < 10) continue; // Skip very short titles
         
         // Generate unique slug
@@ -113,9 +170,87 @@ async function fetchRSSFeed(feedConfig) {
           continue;
         }
         
-        // Create article content from description
-        const content = item.contentSnippet || item.content || item.summary || title;
-        const excerpt = content.length > 200 ? content.substring(0, 197) + '...' : content;
+        // Create article content from description and clean it
+        let content = item.contentSnippet || item.content || item.summary || title;
+        
+        // Clean content to remove source attributions
+        const contentSourcePatterns = [
+          /\s*[-–—]\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+          /\s*(Google News|Jagbani|BBC News|CNN|Reuters|AP News|Times of India|Hindustan Times|Indian Express|NDTV|Zee News|Aaj Tak|ABP News|News18|India Today|The Hindu|Economic Times|Business Standard|Mint|Dainik Bhaskar|Dainik Jagran|Navbharat Times|Punjab Kesari|Ajit|Rozana Spokesman|Dainik Tribune)\s*$/gi,
+          /\(source:.*?\)/gi,
+          /source:.*?(?=\.|$)/gi
+        ];
+        
+        contentSourcePatterns.forEach(pattern => {
+          content = content.replace(pattern, '').trim();
+        });
+        
+        // If content is too short (likely just a snippet), try to enhance it
+        if (content.length < 200 && item.link) {
+          // Try to scrape full content from the original article URL
+          console.log(`📰 Attempting to fetch full content for: ${title.substring(0, 50)}...`);
+          
+          try {
+            const scrapedContent = await scrapeFullArticleContent(item.link);
+            if (scrapedContent && scrapedContent.length > content.length) {
+              console.log(`✅ Enhanced content from ${content.length} to ${scrapedContent.length} characters`);
+              content = scrapedContent;
+            } else {
+              // If scraping fails, create enhanced content with available info
+              const pubDate = item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-US', { 
+                year: 'numeric', month: 'long', day: 'numeric' 
+              }) : 'Recently';
+              
+              const enhancedContent = `
+                <div class="news-content">
+                  <div class="news-summary">
+                    <p><strong>${content}</strong></p>
+                  </div>
+                  
+                  <div class="news-details">
+                    <p>ਇਹ ਖਬਰ ${pubDate} ਨੂੰ ਪ੍ਰਕਾਸ਼ਿਤ ਹੋਈ ਸੀ। ਇਸ ਘਟਨਾ ਬਾਰੇ ਹੋਰ ਵੇਰਵੇ ਮੂਲ ਸਰੋਤ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</p>
+                    <p>This news was published on ${pubDate}. For more comprehensive details about this development, readers are encouraged to visit the original source.</p>
+                  </div>
+                  
+                  <div class="news-disclaimer">
+                    <p><strong>ਨੋਟ:</strong> ਇਹ ਖਬਰ RSS ਫੀਡ ਰਾਹੀਂ ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ ਹੈ। ਸੰਪੂਰਨ ਜਾਣਕਾਰੀ ਲਈ ਮੂਲ ਸਰੋਤ ਦੇਖੋ।</p>
+                    <p><em><strong>Note:</strong> This news has been obtained through RSS feed. Please refer to the original source for complete information.</em></p>
+                  </div>
+                </div>
+              `.trim();
+              content = enhancedContent;
+            }
+          } catch (error) {
+            console.error(`❌ Failed to scrape content for ${title}: ${error.message}`);
+            // Fallback to enhanced version with disclaimer
+            const pubDate = item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-US', { 
+              year: 'numeric', month: 'long', day: 'numeric' 
+            }) : 'Recently';
+            
+            const enhancedContent = `
+              <div class="news-content">
+                <div class="news-summary">
+                  <p><strong>${content}</strong></p>
+                </div>
+                
+                <div class="news-details">
+                  <p>ਇਹ ਖਬਰ ${pubDate} ਨੂੰ ਪ੍ਰਕਾਸ਼ਿਤ ਹੋਈ ਸੀ। ਇਸ ਘਟਨਾ ਬਾਰੇ ਹੋਰ ਵੇਰਵੇ ਮੂਲ ਸਰੋਤ ਤੋਂ ਪ੍ਰਾਪਤ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</p>
+                  <p>This news was published on ${pubDate}. For more comprehensive details about this development, readers are encouraged to visit the original source.</p>
+                </div>
+                
+                <div class="news-disclaimer">
+                  <p><strong>ਨੋਟ:</strong> ਇਹ ਖਬਰ RSS ਫੀਡ ਰਾਹੀਂ ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ ਹੈ। ਸੰਪੂਰਨ ਜਾਣਕਾਰੀ ਲਈ ਮੂਲ ਸਰੋਤ ਦੇਖੋ।</p>
+                  <p><em><strong>Note:</strong> This news has been obtained through RSS feed. Please refer to the original source for complete information.</em></p>
+                </div>
+              </div>
+            `.trim();
+            content = enhancedContent;
+          }
+        }
+        
+        const excerpt = (item.contentSnippet || item.summary || content).length > 200 
+          ? (item.contentSnippet || item.summary || content).substring(0, 197) + '...' 
+          : (item.contentSnippet || item.summary || content);
         
         // Use red gradient placeholder instead of Google News logo
         const featuredImage = getGoogleNewsLogo();
@@ -132,7 +267,7 @@ async function fetchRSSFeed(feedConfig) {
           rssAuthor: 'Google News', // Use rssAuthor field instead of author
           status: 'published',
           publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
-          source: feedConfig.name,
+          source: filterSourceName(feed.title) || 'Unknown Source',
           tags: [feedConfig.category, 'rss', 'google-news'],
           language: 'punjabi',
           seo: {
