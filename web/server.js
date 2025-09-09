@@ -182,7 +182,7 @@ app.use('/api/news', require('./routes/news'));
 app.use('/api/podcasts', require('./routes/podcasts'));
 app.use('/api/videos', require('./routes/videos'));
 app.use('/api/opinions', require('./routes/opinions')); // Opinion routes
-app.use('/api/lifeculture', require('./routes/lifeculture')); // Life & Culture routes
+app.use('/api/lifeculture', require('./routes/lifeculture.clean')); // Life & Culture routes
 app.use('/api/home', require('./routes/home')); // Aggregated homepage content
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/upload', require('./routes/upload'));
@@ -198,25 +198,52 @@ console.log('✅ Push notifications routes loaded successfully');
 // 5WH Media App Fetch API (for mobile app)
 app.use('/app/fetch', require('./routes/appFetch'));
 
-// Serve React app in production
+// Serve React app in production and development
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
   
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  // Handle React routing - must be last route
+  app.get(/^(?!\/api|\/app).*$/, (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client/build/index.html'));
   });
+} else {
+  // Development mode - serve React build if available
+  const buildPath = path.join(__dirname, 'client/build');
+  const indexPath = path.join(buildPath, 'index.html');
+  
+  if (require('fs').existsSync(indexPath)) {
+    app.use(express.static(buildPath));
+    
+    // Handle React routing for development - excluding API routes
+    app.get(/^(?!\/api|\/app).*$/, (req, res) => {
+      res.sendFile(path.resolve(buildPath, 'index.html'));
+    });
+  } else {
+    // If no build exists, show API information page
+    app.get('/', (req, res) => {
+      res.json({
+        message: '5WH Media API Server',
+        version: '1.0.0',
+        status: 'running',
+        endpoints: {
+          news: '/api/news',
+          opinions: '/api/opinions',
+          lifeculture: {
+            books: '/api/lifeculture/books',
+            events: '/api/lifeculture/cultural-events'
+          },
+          videos: '/api/videos',
+          podcasts: '/api/podcasts',
+          mobile: {
+            news: '/app/fetch/news',
+            videos: '/app/fetch/videos',
+            podcasts: '/app/fetch/podcasts'
+          }
+        }
+      });
+    });
+  }
 }
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
 
 // Centralized error handler with trace id (after all routes & middlewares)
 app.use((err, req, res, next) => {
