@@ -7,14 +7,14 @@ async function testLifeCultureAPI() {
     
     // Test books endpoint
     console.log('1. Testing GET /api/lifeculture/books');
-    const booksResponse = await axios.get('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/lifeculture/books');
+    const booksResponse = await axios.get('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/lifeculture/books');
     console.log('✅ Books endpoint working');
     console.log('Response:', JSON.stringify(booksResponse.data, null, 2));
     console.log('\n');
     
     // Test cultural events endpoint
     console.log('2. Testing GET /api/lifeculture/cultural-events');
-    const eventsResponse = await axios.get('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/lifeculture/cultural-events');
+    const eventsResponse = await axios.get('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/lifeculture/cultural-events');
     console.log('✅ Cultural events endpoint working');
     console.log('Response:', JSON.stringify(eventsResponse.data, null, 2));
     console.log('\n');

@@ -22,8 +22,8 @@ router.use(cors({
   origin: [
     /^exp:\/\//,
     'http://localhost',
-    'https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com',
-    'https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com',
+    'https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000',
+    'https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000',
     'http://localhost:8081',
     'http://127.0.0.1:8081',
     'http://localhost:19000',

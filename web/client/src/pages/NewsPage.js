@@ -510,7 +510,7 @@ const NewsPage = () => {
                       src={
                         article.featuredImage.url.startsWith('http') 
                           ? article.featuredImage.url 
-                          : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com${article.featuredImage.url}`
+                          : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage.url}`
                       }
                       alt={article.featuredImage?.alt || article.title}
                       style={{

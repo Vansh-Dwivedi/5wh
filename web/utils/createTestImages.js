@@ -68,7 +68,7 @@ async function createTestImages() {
   
   console.log('\n📁 Test images created in:', testDir);
   console.log('\n🧪 You can now use these images to test the upload and resize functionality:');
-  console.log('   1. Open https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/image-upload-test.html');
+  console.log('   1. Open https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/image-upload-test.html');
   console.log('   2. Upload any of the test images');
   console.log('   3. Verify they are resized to exactly 300x200 pixels');
 }

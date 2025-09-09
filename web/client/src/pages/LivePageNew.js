@@ -99,7 +99,7 @@ const LivePage = () => {
 
     try {
       console.log('Fetching live streams...');
-      const response = await fetch('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/live');
+      const response = await fetch('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

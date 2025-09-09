@@ -213,7 +213,7 @@ const NewsSlider = ({ news = [] }) => {
                                     backgroundImage: sliderNews[currentSlide]?.featuredImage?.url
                                         ? `url(${sliderNews[currentSlide].featuredImage.url.startsWith('http')
                                             ? sliderNews[currentSlide].featuredImage.url
-                                            : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com${sliderNews[currentSlide].featuredImage.url}`})`
+                                            : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${sliderNews[currentSlide].featuredImage.url}`})`
                                         : 'linear-gradient(135deg, #ff4757 0%, #c41e3a 50%, #8b0000 100%)',
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
