@@ -24,7 +24,7 @@ const config = {
   mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/5wh-news',
   cors: {
     allowedOrigins: list(process.env.CORS_ORIGINS, [
-      'http://localhost:3000','http://127.0.0.1:3000','http://localhost:3001','http://127.0.0.1:3001'
+      'https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com','http://127.0.0.1:3000','http://localhost:3001','http://127.0.0.1:3001'
     ])
   },
   rateLimit: {

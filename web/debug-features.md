@@ -1,8 +1,8 @@
 # 5WH Media Application - Feature Debug Report
 
 ## Application Status
-- ✅ **Client Application**: Running on http://localhost:3000
-- ✅ **Server Application**: Running on http://localhost:5000  
+- ✅ **Client Application**: Running on https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com
+- ✅ **Server Application**: Running on https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com  
 - ✅ **MongoDB**: Connected successfully
 - ✅ **Environment**: .env files loaded
 - ✅ **Compilation**: No errors detected
@@ -94,19 +94,19 @@
 - Error handling for failed requests
 
 ## Test URLs
-- Homepage: http://localhost:3000/
-- Login: http://localhost:3000/login
-- Admin Dashboard: http://localhost:3000/admin/dashboard
-- Editor Dashboard: http://localhost:3000/editor/dashboard
-- News: http://localhost:3000/news
-- Videos: http://localhost:3000/videos
-- Audio: http://localhost:3000/audio
-- Live: http://localhost:3000/live
-- Opinions: http://localhost:3000/opinions
+- Homepage: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/
+- Login: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/login
+- Admin Dashboard: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/admin/dashboard
+- Editor Dashboard: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/editor/dashboard
+- News: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/news
+- Videos: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/videos
+- Audio: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/audio
+- Live: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/live
+- Opinions: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/opinions
 
 ## API Test URLs
-- News API: http://localhost:5000/api/news
-- Videos API: http://localhost:5000/api/videos
-- Podcasts API: http://localhost:5000/api/podcasts
-- Live API: http://localhost:5000/api/live
-- Mobile API: http://localhost:5000/app/fetch/news
+- News API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/news
+- Videos API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/videos
+- Podcasts API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/podcasts
+- Live API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/api/live
+- Mobile API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com/app/fetch/news

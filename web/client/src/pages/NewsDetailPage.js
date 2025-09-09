@@ -353,7 +353,7 @@ const NewsDetailPage = () => {
                   {article.featuredImage && article.featuredImage.url ? (
                     <>
                       <img
-                        src={article.featuredImage.url.startsWith('http') ? article.featuredImage.url : `http://localhost:5000${article.featuredImage.url}`}
+                        src={article.featuredImage.url.startsWith('http') ? article.featuredImage.url : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com${article.featuredImage.url}`}
                         alt={article.featuredImage.alt || article.title}
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -512,7 +512,7 @@ const NewsDetailPage = () => {
                           <CardMedia
                             component="img"
                             height="140"
-                            image={relatedArticle.featuredImage.url.startsWith('http') ? relatedArticle.featuredImage.url : `http://localhost:5000${relatedArticle.featuredImage.url}`}
+                            image={relatedArticle.featuredImage.url.startsWith('http') ? relatedArticle.featuredImage.url : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com${relatedArticle.featuredImage.url}`}
                             alt={relatedArticle.featuredImage.alt || relatedArticle.title}
                             onError={(e) => {
                               e.target.style.display = 'none';

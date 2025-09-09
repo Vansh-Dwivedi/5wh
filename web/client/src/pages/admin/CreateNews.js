@@ -260,7 +260,7 @@ const CreateNews = () => {
       }, 1000);
 
       return {
-        url: `http://localhost:5000${(result.image || result.video).url}`,
+        url: `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com${(result.image || result.video).url}`,
         name: (result.image || result.video).name,
         size: (result.image || result.video).size,
         type: (result.image || result.video).type
