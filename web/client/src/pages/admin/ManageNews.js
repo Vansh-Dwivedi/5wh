@@ -299,7 +299,7 @@ const ManageNews = () => {
                           component="img"
                           src={article.featuredImage.url.startsWith('http') 
                             ? article.featuredImage.url 
-                            : `https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage.url}`}
+                            : `http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage.url}`}
                           alt={article.title}
                           sx={{ 
                             width: 60, 

@@ -73,7 +73,7 @@ const NotificationHistory = () => {
   const fetchNotificationHistory = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/history?page=${page}&limit=20`, {
+      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/history?page=${page}&limit=20`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -97,7 +97,7 @@ const NotificationHistory = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/stats', {
+      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/stats', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

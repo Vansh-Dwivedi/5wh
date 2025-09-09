@@ -108,7 +108,7 @@ const LifeCulturePage = () => {
   const fetchOpinions = async () => {
     try {
       setOpinionLoading(true);
-      const response = await fetch(`https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions?page=${opinionPagination.current}&limit=9`);
+      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions?page=${opinionPagination.current}&limit=9`);
       const data = await response.json();
       
       if (data.success) {
@@ -127,7 +127,7 @@ const LifeCulturePage = () => {
 
   const fetchFeaturedOpinions = async () => {
     try {
-      const response = await fetch('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions/featured');
+      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions/featured');
       const data = await response.json();
       
       if (data.success) {
@@ -779,7 +779,7 @@ const LifeCulturePage = () => {
                     <CardMedia
                       component="img"
                       height="100%"
-                      image={`https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${featuredOpinion.featuredImage}`}
+                      image={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${featuredOpinion.featuredImage}`}
                       alt={featuredOpinion.title}
                       sx={{ 
                         minHeight: { xs: 200, md: 300 },
@@ -862,7 +862,7 @@ const LifeCulturePage = () => {
                             <CardMedia
                               component="img"
                               height="200"
-                              image={`https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage}`}
+                              image={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage}`}
                               alt={article.title}
                               sx={{ objectFit: 'cover' }}
                             />

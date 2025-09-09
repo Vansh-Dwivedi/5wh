@@ -1,8 +1,8 @@
 # 5WH Media Application - Feature Debug Report
 
 ## Application Status
-- ✅ **Client Application**: Running on https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
-- ✅ **Server Application**: Running on https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000  
+- ✅ **Client Application**: Running on http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
+- ✅ **Server Application**: Running on http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000  
 - ✅ **MongoDB**: Connected successfully
 - ✅ **Environment**: .env files loaded
 - ✅ **Compilation**: No errors detected
@@ -94,19 +94,19 @@
 - Error handling for failed requests
 
 ## Test URLs
-- Homepage: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/
-- Login: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/login
-- Admin Dashboard: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/admin/dashboard
-- Editor Dashboard: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/editor/dashboard
-- News: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/news
-- Videos: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/videos
-- Audio: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/audio
-- Live: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/live
-- Opinions: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/opinions
+- Homepage: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/
+- Login: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/login
+- Admin Dashboard: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/admin/dashboard
+- Editor Dashboard: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/editor/dashboard
+- News: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/news
+- Videos: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/videos
+- Audio: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/audio
+- Live: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/live
+- Opinions: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/opinions
 
 ## API Test URLs
-- News API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/news
-- Videos API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/videos
-- Podcasts API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/podcasts
-- Live API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live
-- Mobile API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/app/fetch/news
+- News API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/news
+- Videos API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/videos
+- Podcasts API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/podcasts
+- Live API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live
+- Mobile API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/app/fetch/news

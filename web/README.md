@@ -137,7 +137,7 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 MAX_FILE_SIZE=500MB
 
 # CORS Settings
-CLIENT_URL=https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
+CLIENT_URL=http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
 ```
 
 ### 5. Start MongoDB
@@ -166,8 +166,8 @@ npm run client
 ```
 
 The application will be available at:
-- Frontend: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
-- Backend API: https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
+- Frontend: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
+- Backend API: http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000
 
 ## 📱 Mobile App Conversion
 

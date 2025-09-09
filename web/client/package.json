@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000",
+  "proxy": "http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

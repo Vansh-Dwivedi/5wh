@@ -32,7 +32,7 @@ const SubscriptionDialog = ({ open, onClose }) => {
     setError('');
 
     try {
-      const response = await fetch('https://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/newsletter/subscribe', {
+      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/newsletter/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
