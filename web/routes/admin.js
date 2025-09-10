@@ -7,6 +7,7 @@ const News = require('../models/News');
 const Podcast = require('../models/Podcast');
 const Video = require('../models/Video');
 const Opinion = require('../models/Opinion');
+const RadioConfig = require('../models/RadioConfig');
 const WebScrapingService = require('../services/webScrapingService');
 const AuditLog = require('../models/AuditLog');
 
@@ -464,6 +465,202 @@ router.get('/rss/articles', editorAuth, async (req, res) => {
   } catch (error) {
     console.error('Get RSS articles error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/admin/radio-config
+// @desc    Get current radio configuration
+// @access  Private (Admin and Editor)
+router.get('/radio-config', editorAuth, async (req, res) => {
+  try {
+    const radioConfig = await RadioConfig.getConfig();
+    res.json({
+      success: true,
+      data: radioConfig
+    });
+  } catch (error) {
+    console.error('Get radio config error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch radio configuration' 
+    });
+  }
+});
+
+// @route   PUT /api/admin/radio-config
+// @desc    Update radio configuration
+// @access  Private (Admin only)
+router.put('/radio-config', adminAuth, recordAudit, async (req, res) => {
+  try {
+    const {
+      streamUrl,
+      title,
+      currentShow,
+      currentArtist,
+      isLive,
+      listenersCount
+    } = req.body;
+
+    // Validation
+    if (!streamUrl || !streamUrl.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Stream URL is required'
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(streamUrl);
+    } catch (urlError) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid stream URL'
+      });
+    }
+
+    // Get existing config or create new one
+    let radioConfig = await RadioConfig.findOne();
+    if (!radioConfig) {
+      radioConfig = new RadioConfig();
+    }
+
+    // Update fields
+    if (streamUrl) radioConfig.streamUrl = streamUrl.trim();
+    if (title) radioConfig.title = title.trim();
+    if (currentShow !== undefined) radioConfig.currentShow = currentShow.trim();
+    if (currentArtist !== undefined) radioConfig.currentArtist = currentArtist.trim();
+    if (typeof isLive === 'boolean') radioConfig.isLive = isLive;
+    if (typeof listenersCount === 'number' && listenersCount >= 0) {
+      radioConfig.listenersCount = listenersCount;
+    }
+
+    await radioConfig.save();
+
+    res.json({
+      success: true,
+      message: 'Radio configuration updated successfully',
+      data: radioConfig
+    });
+
+  } catch (error) {
+    console.error('Update radio config error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update radio configuration' 
+    });
+  }
+});
+
+// @route   POST /api/admin/radio-config/schedule
+// @desc    Add or update radio schedule
+// @access  Private (Admin only)
+router.post('/radio-config/schedule', adminAuth, recordAudit, async (req, res) => {
+  try {
+    const { day, startTime, endTime, showName, host } = req.body;
+
+    // Validation
+    if (!day || !startTime || !endTime || !showName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Day, start time, end time, and show name are required'
+      });
+    }
+
+    const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    if (!validDays.includes(day.toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid day. Must be one of: ' + validDays.join(', ')
+      });
+    }
+
+    // Time format validation (HH:MM)
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid time format. Use HH:MM format (e.g., 14:30)'
+      });
+    }
+
+    const radioConfig = await RadioConfig.getConfig();
+    
+    // Remove existing schedule for the same day
+    radioConfig.schedule = radioConfig.schedule.filter(
+      schedule => schedule.day.toLowerCase() !== day.toLowerCase()
+    );
+
+    // Add new schedule
+    radioConfig.schedule.push({
+      day: day.toLowerCase(),
+      startTime,
+      endTime,
+      showName: showName.trim(),
+      host: host ? host.trim() : ''
+    });
+
+    await radioConfig.save();
+
+    res.json({
+      success: true,
+      message: 'Radio schedule updated successfully',
+      data: radioConfig
+    });
+
+  } catch (error) {
+    console.error('Update radio schedule error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to update radio schedule' 
+    });
+  }
+});
+
+// @route   DELETE /api/admin/radio-config/schedule/:day
+// @desc    Delete radio schedule for specific day
+// @access  Private (Admin only)
+router.delete('/radio-config/schedule/:day', adminAuth, recordAudit, async (req, res) => {
+  try {
+    const { day } = req.params;
+    
+    const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    if (!validDays.includes(day.toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid day'
+      });
+    }
+
+    const radioConfig = await RadioConfig.getConfig();
+    
+    // Remove schedule for the specified day
+    const initialLength = radioConfig.schedule.length;
+    radioConfig.schedule = radioConfig.schedule.filter(
+      schedule => schedule.day.toLowerCase() !== day.toLowerCase()
+    );
+
+    if (radioConfig.schedule.length === initialLength) {
+      return res.status(404).json({
+        success: false,
+        message: 'No schedule found for this day'
+      });
+    }
+
+    await radioConfig.save();
+
+    res.json({
+      success: true,
+      message: 'Radio schedule deleted successfully',
+      data: radioConfig
+    });
+
+  } catch (error) {
+    console.error('Delete radio schedule error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete radio schedule' 
+    });
   }
 });
 

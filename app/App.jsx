@@ -78,6 +78,7 @@ const useTheme = () => {
 // Add this origin to your backend CORS configuration.
 const API_BASE_URL = 'https://5whmedia.com/app/fetch';
 const LIVE_API_URL = 'https://5whmedia.com/api/live';
+const RADIO_API_URL = 'https://5whmedia.com/api/app/radio';
 const API_TOKEN = 'APPFETCHCOMMAND!@!@!';
 
 // Development mode detection
@@ -85,186 +86,201 @@ const isDevelopment = process.env.NODE_ENV === 'development' || __DEV__;
 
 // --- Screen Components ---
 
-// Contact Screen
+// Contact Screen - Combined with About
 function ContactScreen() {
+    const [activeTab, setActiveTab] = useState('contact');
+
     return (
         <View style={styles.container}>
-            <StunningHeader title="Contact Us" />
+            <StunningHeader title="Contact & About" />
+            
+            {/* Simple Tab Switcher */}
+            <View style={styles.simpleTabContainer}>
+                <TouchableOpacity 
+                    style={[styles.simpleTab, activeTab === 'contact' && styles.simpleActiveTab]}
+                    onPress={() => setActiveTab('contact')}
+                >
+                    <Text style={[styles.simpleTabText, activeTab === 'contact' && styles.simpleActiveTabText]}>
+                        Contact
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.simpleTab, activeTab === 'about' && styles.simpleActiveTab]}
+                    onPress={() => setActiveTab('about')}
+                >
+                    <Text style={[styles.simpleTabText, activeTab === 'about' && styles.simpleActiveTabText]}>
+                        About
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
             <ScrollView 
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                <MindBlowingCard style={styles.contactCard}>
-                    <View style={styles.contactHeader}>
-                        <Ionicons name="mail" size={48} color={COLORS.primary} />
-                        <Text style={styles.contactTitle}>Get In Touch</Text>
-                        <Text style={styles.contactSubtitle}>We'd love to hear from you</Text>
-                    </View>
-
-                    <View style={styles.contactInfo}>
-                        <TouchableOpacity 
-                            style={styles.contactItem}
-                            onPress={() => openLink('mailto:fivewhnewsmedia@gmail.com')}
-                        >
-                            <Ionicons name="mail-outline" size={24} color={COLORS.primary} />
-                            <View style={styles.contactItemText}>
-                                <Text style={styles.contactItemTitle}>Email</Text>
-                                <Text style={styles.contactItemValue}>fivewhnewsmedia@gmail.com</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                            style={styles.contactItem}
-                            onPress={() => openLink('tel:+919876297823')}
-                        >
-                            <Ionicons name="call-outline" size={24} color={COLORS.primary} />
-                            <View style={styles.contactItemText}>
-                                <Text style={styles.contactItemTitle}>Phone (India)</Text>
-                                <Text style={styles.contactItemValue}>+91 987-62-97823</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                            style={styles.contactItem}
-                            onPress={() => openLink('tel:+17802437033')}
-                        >
-                            <Ionicons name="call-outline" size={24} color={COLORS.primary} />
-                            <View style={styles.contactItemText}>
-                                <Text style={styles.contactItemTitle}>Phone (Canada)</Text>
-                                <Text style={styles.contactItemValue}>+1 780-243-7033</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity 
-                            style={styles.contactItem}
-                            onPress={() => openLink('https://5whmedia.com')}
-                        >
-                            <Ionicons name="globe-outline" size={24} color={COLORS.primary} />
-                            <View style={styles.contactItemText}>
-                                <Text style={styles.contactItemTitle}>Website</Text>
-                                <Text style={styles.contactItemValue}>Visit 5whmedia.com</Text>
-                            </View>
-                            <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
-                        </TouchableOpacity>
-
-                        <View style={styles.contactItem}>
-                            <Ionicons name="location-outline" size={24} color={COLORS.primary} />
-                            <View style={styles.contactItemText}>
-                                <Text style={styles.contactItemTitle}>Locations</Text>
-                                <Text style={styles.contactItemValue}>India & Canada</Text>
-                            </View>
+                {activeTab === 'contact' ? (
+                    /* Contact Tab Content */
+                    <MindBlowingCard style={styles.contactCard}>
+                        <View style={styles.contactHeader}>
+                            <Ionicons name="mail" size={48} color={COLORS.primary} />
+                            <Text style={styles.contactTitle}>Get In Touch</Text>
+                            <Text style={styles.contactSubtitle}>We'd love to hear from you</Text>
                         </View>
-                    </View>
 
-                    <View style={styles.socialMedia}>
-                        <Text style={styles.socialTitle}>Follow Us</Text>
-                        <View style={styles.socialButtons}>
+                        <View style={styles.contactInfo}>
                             <TouchableOpacity 
-                                style={styles.socialButton}
-                                onPress={() => openLink('https://www.facebook.com/5whmedia/')}
+                                style={styles.contactItem}
+                                onPress={() => openLink('mailto:fivewhnewsmedia@gmail.com')}
                             >
-                                <Ionicons name="logo-facebook" size={24} color={COLORS.white} />
+                                <Ionicons name="mail-outline" size={24} color={COLORS.primary} />
+                                <View style={styles.contactItemText}>
+                                    <Text style={styles.contactItemTitle}>Email</Text>
+                                    <Text style={styles.contactItemValue}>fivewhnewsmedia@gmail.com</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
                             </TouchableOpacity>
+
                             <TouchableOpacity 
-                                style={styles.socialButton}
-                                onPress={() => openLink('http://instagram.com/5whmedia')}
+                                style={styles.contactItem}
+                                onPress={() => openLink('tel:+919876297823')}
                             >
-                                <Ionicons name="logo-instagram" size={24} color={COLORS.white} />
+                                <Ionicons name="call-outline" size={24} color={COLORS.primary} />
+                                <View style={styles.contactItemText}>
+                                    <Text style={styles.contactItemTitle}>Phone (India)</Text>
+                                    <Text style={styles.contactItemValue}>+91 987-62-97823</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
                             </TouchableOpacity>
+
                             <TouchableOpacity 
-                                style={styles.socialButton}
-                                onPress={() => openLink('https://www.youtube.com/@5wh_media')}
+                                style={styles.contactItem}
+                                onPress={() => openLink('tel:+17802437033')}
                             >
-                                <Ionicons name="logo-youtube" size={24} color={COLORS.white} />
+                                <Ionicons name="call-outline" size={24} color={COLORS.primary} />
+                                <View style={styles.contactItemText}>
+                                    <Text style={styles.contactItemTitle}>Phone (Canada)</Text>
+                                    <Text style={styles.contactItemValue}>+1 780-243-7033</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
                             </TouchableOpacity>
-                        </View>
-                    </View>
-                </MindBlowingCard>
-            </ScrollView>
-        </View>
-    );
-}
 
-// About Screen
-function AboutScreen() {
-    return (
-        <View style={styles.container}>
-            <StunningHeader title="About 5WH Media" />
-            <ScrollView 
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                <MindBlowingCard style={styles.aboutCard}>
-                    <View style={styles.aboutHeader}>
-                        <Image 
-                            source={{ uri: 'https://placehold.co/200x100/DC143C/FFFFFF?text=5WH+MEDIA' }}
-                            style={styles.aboutLogo}
-                        />
-                        <Text style={styles.aboutTitle}>5WH Media</Text>
-                        <Text style={styles.aboutSubtitle}>Your Voice, Your Stories</Text>
-                    </View>
+                            <TouchableOpacity 
+                                style={styles.contactItem}
+                                onPress={() => openLink('https://5whmedia.com')}
+                            >
+                                <Ionicons name="globe-outline" size={24} color={COLORS.primary} />
+                                <View style={styles.contactItemText}>
+                                    <Text style={styles.contactItemTitle}>Website</Text>
+                                    <Text style={styles.contactItemValue}>Visit 5whmedia.com</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
+                            </TouchableOpacity>
 
-                    <View style={styles.aboutContent}>
-                        <Text style={styles.aboutText}>
-                            5WH Media is a premier broadcasting company dedicated to bringing you the latest news, 
-                            engaging talk shows, and quality entertainment. We believe in the power of storytelling 
-                            and the importance of staying connected with our community.
-                        </Text>
-
-                        <Text style={styles.aboutSectionTitle}>Our Mission</Text>
-                        <Text style={styles.aboutText}>
-                            To provide accurate, timely, and engaging content that informs, entertains, and connects 
-                            our audience. We strive to be the voice of the community and a platform for diverse perspectives.
-                        </Text>
-
-                        <Text style={styles.aboutSectionTitle}>What We Offer</Text>
-                        <View style={styles.featuresList}>
-                            <View style={styles.featureItem}>
-                                <Ionicons name="radio" size={20} color={COLORS.primary} />
-                                <Text style={styles.featureText}>Live Radio Broadcasting</Text>
-                            </View>
-                            <View style={styles.featureItem}>
-                                <Ionicons name="newspaper" size={20} color={COLORS.primary} />
-                                <Text style={styles.featureText}>Breaking News Coverage</Text>
-                            </View>
-                            <View style={styles.featureItem}>
-                                <Ionicons name="videocam" size={20} color={COLORS.primary} />
-                                <Text style={styles.featureText}>Live Video Streams</Text>
-                            </View>
-                            <View style={styles.featureItem}>
-                                <Ionicons name="book" size={20} color={COLORS.primary} />
-                                <Text style={styles.featureText}>Cultural Content</Text>
+                            <View style={styles.contactItem}>
+                                <Ionicons name="location-outline" size={24} color={COLORS.primary} />
+                                <View style={styles.contactItemText}>
+                                    <Text style={styles.contactItemTitle}>Locations</Text>
+                                    <Text style={styles.contactItemValue}>India & Canada</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </MindBlowingCard>
 
-                <MindBlowingCard style={styles.statsCard}>
-                    <Text style={styles.statsTitle}>Our Impact</Text>
-                    <View style={styles.statsGrid}>
-                        <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>50K+</Text>
-                            <Text style={styles.statLabel}>Daily Listeners</Text>
+                        <View style={styles.socialMedia}>
+                            <Text style={styles.socialTitle}>Follow Us</Text>
+                            <View style={styles.socialButtons}>
+                                <TouchableOpacity 
+                                    style={styles.socialButton}
+                                    onPress={() => openLink('https://www.facebook.com/5whmedia/')}
+                                >
+                                    <Ionicons name="logo-facebook" size={24} color={COLORS.white} />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={styles.socialButton}
+                                    onPress={() => openLink('http://instagram.com/5whmedia')}
+                                >
+                                    <Ionicons name="logo-instagram" size={24} color={COLORS.white} />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={styles.socialButton}
+                                    onPress={() => openLink('https://www.youtube.com/@5wh_media')}
+                                >
+                                    <Ionicons name="logo-youtube" size={24} color={COLORS.white} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>24/7</Text>
-                            <Text style={styles.statLabel}>Live Broadcasting</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>100+</Text>
-                            <Text style={styles.statLabel}>News Stories Daily</Text>
-                        </View>
-                        <View style={styles.statItem}>
-                            <Text style={styles.statNumber}>5</Text>
-                            <Text style={styles.statLabel}>Years Experience</Text>
-                        </View>
-                    </View>
-                </MindBlowingCard>
+                    </MindBlowingCard>
+                ) : (
+                    /* About Tab Content */
+                    <>
+                        <MindBlowingCard style={styles.aboutCard}>
+                            <View style={styles.aboutHeader}>
+                                <Image 
+                                    source={{ uri: 'https://placehold.co/200x100/DC143C/FFFFFF?text=5WH+MEDIA' }}
+                                    style={styles.aboutLogo}
+                                />
+                                <Text style={styles.aboutTitle}>5WH Media</Text>
+                                <Text style={styles.aboutSubtitle}>Your Voice, Your Stories</Text>
+                            </View>
+
+                            <View style={styles.aboutContent}>
+                                <Text style={styles.aboutText}>
+                                    5WH Media is a premier broadcasting company dedicated to bringing you the latest news, 
+                                    engaging talk shows, and quality entertainment. We believe in the power of storytelling 
+                                    and the importance of staying connected with our community.
+                                </Text>
+
+                                <Text style={styles.aboutSectionTitle}>Our Mission</Text>
+                                <Text style={styles.aboutText}>
+                                    To provide accurate, timely, and engaging content that informs, entertains, and connects 
+                                    our audience. We strive to be the voice of the community and a platform for diverse perspectives.
+                                </Text>
+
+                                <Text style={styles.aboutSectionTitle}>What We Offer</Text>
+                                <View style={styles.featuresList}>
+                                    <View style={styles.featureItem}>
+                                        <Ionicons name="radio" size={20} color={COLORS.primary} />
+                                        <Text style={styles.featureText}>Live Radio Broadcasting</Text>
+                                    </View>
+                                    <View style={styles.featureItem}>
+                                        <Ionicons name="newspaper" size={20} color={COLORS.primary} />
+                                        <Text style={styles.featureText}>Breaking News Coverage</Text>
+                                    </View>
+                                    <View style={styles.featureItem}>
+                                        <Ionicons name="videocam" size={20} color={COLORS.primary} />
+                                        <Text style={styles.featureText}>Live Video Streams</Text>
+                                    </View>
+                                    <View style={styles.featureItem}>
+                                        <Ionicons name="book" size={20} color={COLORS.primary} />
+                                        <Text style={styles.featureText}>Cultural Content</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </MindBlowingCard>
+
+                        <MindBlowingCard style={styles.statsCard}>
+                            <Text style={styles.statsTitle}>Our Impact</Text>
+                            <View style={styles.statsGrid}>
+                                <View style={styles.statItem}>
+                                    <Text style={styles.statNumber}>50K+</Text>
+                                    <Text style={styles.statLabel}>Daily Listeners</Text>
+                                </View>
+                                <View style={styles.statItem}>
+                                    <Text style={styles.statNumber}>24/7</Text>
+                                    <Text style={styles.statLabel}>Live Broadcasting</Text>
+                                </View>
+                                <View style={styles.statItem}>
+                                    <Text style={styles.statNumber}>100+</Text>
+                                    <Text style={styles.statLabel}>News Stories Daily</Text>
+                                </View>
+                                <View style={styles.statItem}>
+                                    <Text style={styles.statNumber}>5</Text>
+                                    <Text style={styles.statLabel}>Years Experience</Text>
+                                </View>
+                            </View>
+                        </MindBlowingCard>
+                    </>
+                )}
             </ScrollView>
         </View>
     );
@@ -357,57 +373,81 @@ function PodcastsVideosScreen() {
     }, []);
 
     const renderPodcasts = () => (
-        <View>
-            {podcasts.map((podcast) => (
-                <MindBlowingCard key={podcast.id} style={styles.mediaCard}>
-                    <View style={styles.mediaContent}>
-                        <Image 
-                            source={{ uri: podcast.thumbnail }}
-                            style={styles.mediaThumbnail}
-                        />
-                        <View style={styles.mediaInfo}>
-                            <Text style={styles.mediaTitle} numberOfLines={2}>{podcast.title}</Text>
-                            <Text style={styles.mediaDescription} numberOfLines={2}>{podcast.description}</Text>
-                            <View style={styles.mediaMeta}>
-                                <Text style={styles.mediaMetaText}>{podcast.duration}</Text>
-                                <Text style={styles.mediaMetaText}>•</Text>
-                                <Text style={styles.mediaMetaText}>{podcast.date}</Text>
+        <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            {podcasts.length > 0 ? (
+                podcasts.map((podcast) => (
+                    <MindBlowingCard key={podcast.id} style={styles.mediaCard}>
+                        <View style={styles.mediaContent}>
+                            <Image 
+                                source={{ uri: podcast.thumbnail }}
+                                style={styles.mediaThumbnail}
+                            />
+                            <View style={styles.mediaInfo}>
+                                <Text style={styles.mediaTitle} numberOfLines={2}>{podcast.title}</Text>
+                                <Text style={styles.mediaDescription} numberOfLines={2}>{podcast.description}</Text>
+                                <View style={styles.mediaMeta}>
+                                    <Text style={styles.mediaMetaText}>{podcast.duration}</Text>
+                                    <Text style={styles.mediaMetaText}>•</Text>
+                                    <Text style={styles.mediaMetaText}>{podcast.date}</Text>
+                                </View>
                             </View>
+                            <TouchableOpacity style={styles.playButton}>
+                                <Ionicons name="play" size={24} color={COLORS.primary} />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={styles.playButton}>
-                            <Ionicons name="play" size={24} color={COLORS.primary} />
-                        </TouchableOpacity>
-                    </View>
-                </MindBlowingCard>
-            ))}
-        </View>
+                    </MindBlowingCard>
+                ))
+            ) : (
+                <EmptyState
+                    icon="mic-outline"
+                    title="No Podcasts Available"
+                    message="We're preparing amazing podcast episodes for you. Check back soon for great audio content!"
+                />
+            )}
+        </ScrollView>
     );
 
     const renderVideos = () => (
-        <View>
-            {videos.map((video) => (
-                <MindBlowingCard key={video.id} style={styles.mediaCard}>
-                    <View style={styles.mediaContent}>
-                        <Image 
-                            source={{ uri: video.thumbnail }}
-                            style={styles.mediaThumbnail}
-                        />
-                        <View style={styles.mediaInfo}>
-                            <Text style={styles.mediaTitle} numberOfLines={2}>{video.title}</Text>
-                            <Text style={styles.mediaDescription} numberOfLines={2}>{video.description}</Text>
-                            <View style={styles.mediaMeta}>
-                                <Text style={styles.mediaMetaText}>{video.duration}</Text>
-                                <Text style={styles.mediaMetaText}>•</Text>
-                                <Text style={styles.mediaMetaText}>{video.views}</Text>
+        <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
+            {videos.length > 0 ? (
+                videos.map((video) => (
+                    <MindBlowingCard key={video.id} style={styles.mediaCard}>
+                        <View style={styles.mediaContent}>
+                            <Image 
+                                source={{ uri: video.thumbnail }}
+                                style={styles.mediaThumbnail}
+                            />
+                            <View style={styles.mediaInfo}>
+                                <Text style={styles.mediaTitle} numberOfLines={2}>{video.title}</Text>
+                                <Text style={styles.mediaDescription} numberOfLines={2}>{video.description}</Text>
+                                <View style={styles.mediaMeta}>
+                                    <Text style={styles.mediaMetaText}>{video.duration}</Text>
+                                    <Text style={styles.mediaMetaText}>•</Text>
+                                    <Text style={styles.mediaMetaText}>{video.views}</Text>
+                                </View>
                             </View>
+                            <TouchableOpacity style={styles.playButton}>
+                                <Ionicons name="play-circle" size={24} color={COLORS.primary} />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={styles.playButton}>
-                            <Ionicons name="play-circle" size={24} color={COLORS.primary} />
-                        </TouchableOpacity>
-                    </View>
-                </MindBlowingCard>
-            ))}
-        </View>
+                    </MindBlowingCard>
+                ))
+            ) : (
+                <EmptyState
+                    icon="videocam-outline"
+                    title="No Videos Available"
+                    message="We're creating engaging video content for you. Stay tuned for exciting videos!"
+                />
+            )}
+        </ScrollView>
     );
 
     if (isLoading) {
@@ -454,13 +494,7 @@ function PodcastsVideosScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                {activeTab === 'podcasts' ? renderPodcasts() : renderVideos()}
-            </ScrollView>
+            {activeTab === 'podcasts' ? renderPodcasts() : renderVideos()}
         </View>
     );
 }
@@ -605,6 +639,56 @@ const fetchWithToken = async (endpoint, queryParams = {}) => {
         }
         
         throw error;
+    }
+};
+
+const fetchRadioConfig = async () => {
+    try {
+        console.log('🔄 Fetching radio config from:', RADIO_API_URL);
+        
+        const response = await fetch(RADIO_API_URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log(`📊 Radio config response status: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`❌ Radio config HTTP error! status: ${response.status}, body: ${errorText}`);
+            // Don't throw error, just return null to use fallback
+            return null;
+        }
+
+        const data = await response.json();
+        console.log(`✅ Successfully fetched radio config:`, data);
+        
+        // Check if the response has the expected structure
+        if (data && data.success !== false) {
+            return {
+                streamUrl: data.streamUrl,
+                title: data.title || '5WH Live Radio',
+                artist: data.artist || data.currentShow || 'Live Stream',
+                isLive: data.isLive !== undefined ? data.isLive : true,
+                currentShow: data.currentShow || 'Live Broadcast'
+            };
+        } else {
+            console.log('Invalid radio config response, using fallback');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching radio config:', error);
+        
+        // Check if it's a CORS error
+        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+            console.warn(`🚨 CORS ERROR DETECTED for radio config:`);
+            console.warn(`🔧 Your backend server needs to allow requests from: ${window.location?.origin || 'https://localhost:8081'}`);
+        }
+        
+        // Return null to trigger fallback data
+        return null;
     }
 };
 
@@ -887,6 +971,21 @@ const LoadingSpinner = ({ text = "Loading amazing content..." }) => (
   </View>
 );
 
+const EmptyState = ({ icon, title, message, actionText, onActionPress }) => (
+  <View style={styles.emptyStateContainer}>
+    <View style={styles.emptyStateIconContainer}>
+      <Ionicons name={icon} size={64} color={COLORS.mediumGray} />
+    </View>
+    <Text style={styles.emptyStateTitle}>{title}</Text>
+    <Text style={styles.emptyStateMessage}>{message}</Text>
+    {actionText && onActionPress && (
+      <TouchableOpacity style={styles.emptyStateButton} onPress={onActionPress}>
+        <Text style={styles.emptyStateButtonText}>{actionText}</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+);
+
 // --- Screen Components ---
 
 function HomeScreen() {
@@ -933,7 +1032,8 @@ function HomeScreen() {
 
         const loadRadio = async () => {
             try {
-                const data = await fetchWithToken('radio');
+                // Try to fetch from the new radio API
+                const data = await fetchRadioConfig();
                 if (data && data.streamUrl) {
                     setRadioInfo(data);
                     await setupAudioPlayer(data.streamUrl);
@@ -1020,72 +1120,83 @@ function HomeScreen() {
                     opacity: fadeAnim,
                     transform: [{ translateY: slideAnim }]
                 }}>
-                    {/* Hero Radio Card */}
-                    <MindBlowingCard style={styles.heroRadioCard}>
-                        <View style={styles.radioImageContainer}>
-                            <Image 
-                                source={{ uri: 'https://placehold.co/400x300/DC143C/FFFFFF?text=5WH+LIVE' }} 
-                                style={styles.radioImage} 
-                            />
-                            <LinearGradient
-                                colors={['transparent', COLORS.overlay]}
-                                style={styles.radioOverlay}
-                            />
-                            <View style={styles.liveIndicator}>
-                                <Text style={styles.liveText}>LIVE NOW</Text>
-                            </View>
-                        </View>
-                        
-                        <View style={styles.radioInfo}>
-                            <Text style={styles.radioTitle}>{radioInfo?.title}</Text>
-                            <Text style={styles.radioSubtitle}>{radioInfo?.artist}</Text>
-                            
-                            <View style={styles.playButtonContainer}>
-                                <TouchableOpacity 
-                                    style={styles.playButton} 
-                                    onPress={togglePlayback}
-                                >
-                                    <LinearGradient
-                                        colors={[COLORS.primary, COLORS.primaryDark]}
-                                        style={styles.playButtonGradient}
-                                    >
-                                        <Ionicons 
-                                            name={isPlaying ? 'pause' : 'play'} 
-                                            size={40} 
-                                            color={COLORS.white} 
-                                        />
-                                    </LinearGradient>
-                                </TouchableOpacity>
+                    {radioInfo && sound ? (
+                        /* Hero Radio Card */
+                        <MindBlowingCard style={styles.heroRadioCard}>
+                            <View style={styles.radioImageContainer}>
+                                <Image 
+                                    source={{ uri: 'https://placehold.co/400x300/DC143C/FFFFFF?text=5WH+LIVE' }} 
+                                    style={styles.radioImage} 
+                                />
+                                <LinearGradient
+                                    colors={['transparent', COLORS.overlay]}
+                                    style={styles.radioOverlay}
+                                />
+                                <View style={styles.liveIndicator}>
+                                    <Text style={styles.liveText}>LIVE NOW</Text>
+                                </View>
                             </View>
                             
-                            <View style={styles.volumeContainer}>
-                                <TouchableOpacity 
-                                    style={styles.volumeButton}
-                                    onPress={() => handleVolumeChange(Math.max(0, volume - 0.2))}
-                                >
-                                    <Ionicons name="volume-low" size={20} color={COLORS.mediumGray} />
-                                </TouchableOpacity>
+                            <View style={styles.radioInfo}>
+                                <Text style={styles.radioTitle}>{radioInfo?.title}</Text>
+                                <Text style={styles.radioSubtitle}>{radioInfo?.artist}</Text>
                                 
-                                <View style={styles.volumeDisplay}>
-                                    <View style={styles.volumeTrack}>
-                                        <View 
-                                            style={[
-                                                styles.volumeFill, 
-                                                { width: `${volume * 100}%` }
-                                            ]} 
-                                        />
-                                    </View>
+                                <View style={styles.playButtonContainer}>
+                                    <TouchableOpacity 
+                                        style={styles.playButton} 
+                                        onPress={togglePlayback}
+                                    >
+                                        <LinearGradient
+                                            colors={[COLORS.primary, COLORS.primaryDark]}
+                                            style={styles.playButtonGradient}
+                                        >
+                                            <Ionicons 
+                                                name={isPlaying ? 'pause' : 'play'} 
+                                                size={40} 
+                                                color={COLORS.white} 
+                                            />
+                                        </LinearGradient>
+                                    </TouchableOpacity>
                                 </View>
                                 
-                                <TouchableOpacity 
-                                    style={styles.volumeButton}
-                                    onPress={() => handleVolumeChange(Math.min(1, volume + 0.2))}
-                                >
-                                    <Ionicons name="volume-high" size={20} color={COLORS.mediumGray} />
-                                </TouchableOpacity>
+                                <View style={styles.volumeContainer}>
+                                    <TouchableOpacity 
+                                        style={styles.volumeButton}
+                                        onPress={() => handleVolumeChange(Math.max(0, volume - 0.2))}
+                                    >
+                                        <Ionicons name="volume-low" size={20} color={COLORS.mediumGray} />
+                                    </TouchableOpacity>
+                                    
+                                    <View style={styles.volumeDisplay}>
+                                        <View style={styles.volumeTrack}>
+                                            <View 
+                                                style={[
+                                                    styles.volumeFill, 
+                                                    { width: `${volume * 100}%` }
+                                                ]} 
+                                            />
+                                        </View>
+                                    </View>
+                                    
+                                    <TouchableOpacity 
+                                        style={styles.volumeButton}
+                                        onPress={() => handleVolumeChange(Math.min(1, volume + 0.2))}
+                                    >
+                                        <Ionicons name="volume-high" size={20} color={COLORS.mediumGray} />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
-                    </MindBlowingCard>
+                        </MindBlowingCard>
+                    ) : (
+                        /* Radio Error State */
+                        <EmptyState
+                            icon="radio-outline"
+                            title="Radio Not Available"
+                            message="We're experiencing technical difficulties with our live radio stream. Please try refreshing or check back later."
+                            actionText="Refresh"
+                            onActionPress={onRefresh}
+                        />
+                    )}
                 </Animated.View>
             </ScrollView>
         </View>
@@ -1431,18 +1542,12 @@ function NewsListScreen() {
                     {/* Live Streams Section */}
                     {liveStreams.length > 0 && (
                         <>
-                            <View style={styles.sectionHeader}>
-                                <LinearGradient
-                                    colors={['#FF4500', '#FF6347']}
-                                    style={styles.sectionTitleContainer}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                >
-                                    <View style={styles.sectionTitleContent}>
-                                        <Ionicons name="videocam" size={24} color={COLORS.white} />
-                                        <Text style={styles.sectionTitle}>Live Streams</Text>
-                                    </View>
-                                </LinearGradient>
+                            <View style={styles.professionalSectionHeader}>
+                                <View style={styles.professionalHeaderContent}>
+                                    <Ionicons name="videocam" size={24} color={COLORS.primary} />
+                                    <Text style={styles.professionalSectionTitle}>Live Streams</Text>
+                                </View>
+                                <View style={styles.professionalUnderline} />
                             </View>
                             
                             {paginateArray(liveStreams, currentStreamsPage, STREAMS_PER_PAGE).length > 0 ? (
@@ -1560,23 +1665,17 @@ function NewsListScreen() {
                     {/* News Articles Section */}
                     {recordedNews.length > 0 && (
                         <>
-                            <View style={styles.sectionHeader}>
-                                <LinearGradient
-                                    colors={[COLORS.primaryDark, COLORS.primary]}
-                                    style={styles.sectionTitleContainer}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                >
-                                    <View style={styles.sectionTitleContent}>
-                                        <Ionicons name="newspaper" size={24} color={COLORS.white} />
-                                        <Text style={styles.sectionTitle}>Latest News</Text>
-                                        <View style={styles.newsCountBadge}>
-                                            <Text style={styles.newsCountText}>
-                                                {recordedNews.length}{totalNewsCount > recordedNews.length ? ` of ${totalNewsCount}` : ''}
-                                            </Text>
-                                        </View>
+                            <View style={styles.professionalSectionHeader}>
+                                <View style={styles.professionalHeaderContent}>
+                                    <Ionicons name="newspaper" size={24} color={COLORS.primary} />
+                                    <Text style={styles.professionalSectionTitle}>Latest News</Text>
+                                    <View style={styles.newsCountBadge}>
+                                        <Text style={styles.newsCountText}>
+                                            {recordedNews.length}{totalNewsCount > recordedNews.length ? ` of ${totalNewsCount}` : ''}
+                                        </Text>
                                     </View>
-                                </LinearGradient>
+                                </View>
+                                <View style={styles.professionalUnderline} />
                             </View>
                             
                             {/* Recorded News Bar Items */}
@@ -1686,22 +1785,13 @@ function NewsListScreen() {
 
                     {/* Empty State */}
                     {recordedNews.length === 0 && liveStreams.length === 0 && (
-                        <MindBlowingCard style={styles.emptyStateCard}>
-                            <View style={styles.emptyStateContent}>
-                                <Ionicons name="newspaper-outline" size={64} color={COLORS.mediumGray} />
-                                <Text style={styles.emptyStateTitle}>No Content Available</Text>
-                                <Text style={styles.emptyStateSubtitle}>
-                                    We're working hard to bring you the latest news and live streams. 
-                                    Please check back soon!
-                                </Text>
-                                <BeautifulButton
-                                    title="Refresh"
-                                    onPress={onRefresh}
-                                    icon="refresh"
-                                    style={styles.refreshButton}
-                                />
-                            </View>
-                        </MindBlowingCard>
+                        <EmptyState
+                            icon="newspaper-outline"
+                            title="No Content Available"
+                            message="We're working hard to bring you the latest news and live streams. Please check back soon!"
+                            actionText="Refresh"
+                            onActionPress={onRefresh}
+                        />
                     )}
                 </Animated.View>
             </ScrollView>
@@ -1857,91 +1947,244 @@ const StunningIcon = ({ name, url, color, size = 24 }) => {
 function BooksArticlesTab() {
   const [books, setBooks] = useState([]);
   const [articles, setArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
-    fetch('https://5whmedia.com/api/lifeculture/books')
-      .then(res => res.json())
-      .then(setBooks)
-      .catch(() => setBooks([]));
-    fetch('https://5whmedia.com/api/news?page=1&limit=10')
-      .then(res => res.json())
-      .then(data => setArticles(data.articles || []))
-      .catch(() => setArticles([]));
+    const loadContent = async () => {
+      try {
+        // Load books
+        const booksResponse = await fetch('https://5whmedia.com/api/lifeculture/books');
+        const booksData = await booksResponse.json();
+        
+        if (Array.isArray(booksData)) {
+          setBooks(booksData);
+        } else if (booksData && Array.isArray(booksData.books)) {
+          setBooks(booksData.books);
+        } else {
+          setBooks([]);
+        }
+        
+        // Load articles
+        const articlesResponse = await fetch('https://5whmedia.com/api/news?page=1&limit=10');
+        const articlesData = await articlesResponse.json();
+        setArticles(articlesData.articles || []);
+        
+      } catch (error) {
+        console.error('Error loading life & culture content:', error);
+        setBooks([]);
+        setArticles([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadContent();
   }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.lifeCultureContainer}>
+        <LoadingSpinner text="Loading books & articles..." />
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: COLORS.lightGray }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', margin: 16, color: COLORS.primary }}>Book Recommendations</Text>
-      {books.map((book, index) => (
-        <View key={book.id || index} style={{ margin: 12, padding: 12, backgroundColor: COLORS.white, borderRadius: 8 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 18, color: COLORS.black }}>{book.title || 'Sample Book'}</Text>
-          <Text style={{ color: COLORS.darkGray }}>{book.author || 'Author'}</Text>
-          <Text style={{ color: COLORS.mediumGray }}>{book.description || 'Book description'}</Text>
+    <ScrollView style={styles.lifeCultureContainer} showsVerticalScrollIndicator={false}>
+      {/* Books Section */}
+      <View style={styles.lifeCultureSection}>
+        <View style={styles.professionalSectionHeader}>
+          <View style={styles.professionalHeaderContent}>
+            <Ionicons name="book" size={24} color={COLORS.primary} />
+            <Text style={styles.professionalSectionTitle}>Book Recommendations</Text>
+          </View>
+          <View style={styles.professionalUnderline} />
         </View>
-      ))}
-      <Text style={{ fontSize: 22, fontWeight: 'bold', margin: 16, color: COLORS.primary }}>Articles</Text>
-      {articles.map((article, index) => (
-        <View key={article.id || article.slug || index} style={{ margin: 12, padding: 12, backgroundColor: COLORS.white, borderRadius: 8 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 18, color: COLORS.black }}>{article.title || 'Sample Article'}</Text>
-          <Text style={{ color: COLORS.mediumGray }}>{article.summary || 'Article summary'}</Text>
+        
+        {books.length > 0 ? (
+          books.map((book, index) => (
+            <MindBlowingCard key={book.id || index} style={styles.lifeCultureCard}>
+              <View style={styles.cardContent}>
+                <View style={styles.bookIconContainer}>
+                  <Ionicons name="book-outline" size={24} color={COLORS.primary} />
+                </View>
+                <View style={styles.cardInfo}>
+                  <Text style={styles.cardTitle}>{book.title || 'Sample Book'}</Text>
+                  <Text style={styles.cardAuthor}>by {book.author || 'Unknown Author'}</Text>
+                  <Text style={styles.cardDescription} numberOfLines={2}>
+                    {book.description || 'A fascinating book that will captivate your imagination.'}
+                  </Text>
+                </View>
+                <TouchableOpacity style={styles.cardAction}>
+                  <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
+                </TouchableOpacity>
+              </View>
+            </MindBlowingCard>
+          ))
+        ) : (
+          <EmptyState
+            icon="book-outline"
+            title="No Books Available"
+            message="We're working on bringing you amazing book recommendations. Check back soon!"
+          />
+        )}
+      </View>
+
+      {/* Articles Section */}
+      <View style={styles.lifeCultureSection}>
+        <View style={styles.professionalSectionHeader}>
+          <View style={styles.professionalHeaderContent}>
+            <Ionicons name="newspaper" size={24} color={COLORS.primary} />
+            <Text style={styles.professionalSectionTitle}>Featured Articles</Text>
+          </View>
+          <View style={styles.professionalUnderline} />
         </View>
-      ))}
+        
+        {articles.length > 0 ? (
+          articles.map((article, index) => (
+            <MindBlowingCard key={article.id || article.slug || index} style={styles.lifeCultureCard}>
+              <View style={styles.cardContent}>
+                <View style={styles.articleIconContainer}>
+                  <Ionicons name="newspaper-outline" size={24} color={COLORS.primary} />
+                </View>
+                <View style={styles.cardInfo}>
+                  <Text style={styles.cardTitle}>{article.title || 'Sample Article'}</Text>
+                  <Text style={styles.cardDescription} numberOfLines={2}>
+                    {article.summary || 'An interesting article about culture and lifestyle.'}
+                  </Text>
+                  <Text style={styles.cardMeta}>5 min read</Text>
+                </View>
+                <TouchableOpacity style={styles.cardAction}>
+                  <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
+                </TouchableOpacity>
+              </View>
+            </MindBlowingCard>
+          ))
+        ) : (
+          <EmptyState
+            icon="newspaper-outline"
+            title="No Articles Available"
+            message="We're preparing engaging articles for you. Stay tuned for updates!"
+          />
+        )}
+      </View>
     </ScrollView>
   );
 }
 
 function OpinionsTab() {
   const [opinions, setOpinions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
-    fetch('https://5whmedia.com/api/opinions?page=1&limit=10')
-      .then(res => res.json())
-      .then(data => setOpinions(data.opinions || []))
-      .catch(() => setOpinions([]));
+    const loadOpinions = async () => {
+      try {
+        const response = await fetch('https://5whmedia.com/api/opinions?page=1&limit=10');
+        const data = await response.json();
+        setOpinions(data.opinions || []);
+      } catch (error) {
+        console.error('Error loading opinions:', error);
+        setOpinions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadOpinions();
   }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.lifeCultureContainer}>
+        <LoadingSpinner text="Loading opinions..." />
+      </View>
+    );
+  }
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: COLORS.lightGray }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', margin: 16, color: COLORS.primary }}>Opinions</Text>
-      {opinions.map((opinion, index) => (
-        <View key={opinion.id || opinion.slug || index} style={{ margin: 12, padding: 12, backgroundColor: COLORS.white, borderRadius: 8 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 18, color: COLORS.black }}>{opinion.title || 'Sample Opinion'}</Text>
-          <Text style={{ color: COLORS.mediumGray }}>{opinion.summary || 'Opinion summary'}</Text>
+    <ScrollView style={styles.lifeCultureContainer} showsVerticalScrollIndicator={false}>
+      <View style={styles.lifeCultureSection}>
+        <View style={styles.professionalSectionHeader}>
+          <View style={styles.professionalHeaderContent}>
+            <Ionicons name="chatbubbles" size={24} color={COLORS.primary} />
+            <Text style={styles.professionalSectionTitle}>Opinion Pieces</Text>
+          </View>
+          <View style={styles.professionalUnderline} />
         </View>
-      ))}
+        
+        {opinions.length > 0 ? (
+          opinions.map((opinion, index) => (
+            <MindBlowingCard key={opinion.id || opinion.slug || index} style={styles.lifeCultureCard}>
+              <View style={styles.cardContent}>
+                <View style={styles.opinionIconContainer}>
+                  <Ionicons name="chatbubble-outline" size={24} color={COLORS.primary} />
+                </View>
+                <View style={styles.cardInfo}>
+                  <Text style={styles.cardTitle}>{opinion.title || 'Sample Opinion'}</Text>
+                  <Text style={styles.cardDescription} numberOfLines={3}>
+                    {opinion.summary || 'A thoughtful opinion piece on current events and social issues.'}
+                  </Text>
+                  <Text style={styles.cardMeta}>Opinion • 3 min read</Text>
+                </View>
+                <TouchableOpacity style={styles.cardAction}>
+                  <Ionicons name="chevron-forward" size={20} color={COLORS.mediumGray} />
+                </TouchableOpacity>
+              </View>
+            </MindBlowingCard>
+          ))
+        ) : (
+          <EmptyState
+            icon="chatbubbles-outline"
+            title="No Opinions Available"
+            message="We're gathering diverse perspectives and opinions. Check back later for thought-provoking content!"
+          />
+        )}
+      </View>
     </ScrollView>
   );
 }
 
 function LifeCulturePage() {
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'books', title: 'Books & Articles' },
-    { key: 'opinions', title: 'Opinions' },
-  ]);
-
-  const renderScene = SceneMap({
-    books: BooksArticlesTab,
-    opinions: OpinionsTab,
-  });
-
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: COLORS.primary }}
-      style={{ backgroundColor: COLORS.white }}
-      labelStyle={{ color: COLORS.primary, fontWeight: 'bold' }}
-      inactiveColor={COLORS.mediumGray}
-      activeColor={COLORS.primary}
-    />
-  );
+  const [activeTab, setActiveTab] = useState('books');
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <StunningHeader title="Life & Culture" />
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={{ width: Dimensions.get('window').width }}
-      />
+      
+      {/* Simple Tab Switcher */}
+      <View style={styles.simpleTabContainer}>
+        <TouchableOpacity 
+          style={[styles.simpleTab, activeTab === 'books' && styles.simpleActiveTab]}
+          onPress={() => setActiveTab('books')}
+        >
+          <Ionicons 
+            name="book" 
+            size={18} 
+            color={activeTab === 'books' ? COLORS.white : COLORS.primary} 
+            style={styles.tabIcon}
+          />
+          <Text style={[styles.simpleTabText, activeTab === 'books' && styles.simpleActiveTabText]}>
+            Books & Articles
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.simpleTab, activeTab === 'opinions' && styles.simpleActiveTab]}
+          onPress={() => setActiveTab('opinions')}
+        >
+          <Ionicons 
+            name="chatbubbles" 
+            size={18} 
+            color={activeTab === 'opinions' ? COLORS.white : COLORS.primary} 
+            style={styles.tabIcon}
+          />
+          <Text style={[styles.simpleTabText, activeTab === 'opinions' && styles.simpleActiveTabText]}>
+            Opinions
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Tab Content */}
+      {activeTab === 'books' ? <BooksArticlesTab /> : <OpinionsTab />}
     </View>
   );
 }
@@ -2049,17 +2292,10 @@ export default function App() {
                     }}
                 />
                 <Tab.Screen 
-                    name="About" 
-                    component={AboutScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => <Ionicons name="information-circle" size={size} color={color} />
-                    }}
-                />
-                <Tab.Screen 
-                    name="Contact" 
+                    name="Contact & About" 
                     component={ContactScreen}
                     options={{
-                        tabBarIcon: ({ color, size }) => <Ionicons name="call" size={size} color={color} />
+                        tabBarIcon: ({ color, size }) => <Ionicons name="information-circle" size={size} color={color} />
                     }}
                 />
             </Tab.Navigator>
@@ -2440,16 +2676,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     newsCountBadge: {
-        backgroundColor: COLORS.white,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
-        marginLeft: 8,
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 15,
+        marginLeft: 12,
     },
     newsCountText: {
         fontSize: 12,
-        fontWeight: 'bold',
-        color: COLORS.primary,
+        fontWeight: '600',
+        color: COLORS.white,
     },
     
     // Live Stream Cards
@@ -3173,6 +3409,34 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     
+    // Simple Tab Styles (not too fancy)
+    simpleTabContainer: {
+        flexDirection: 'row',
+        marginHorizontal: 16,
+        marginTop: 16,
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 8,
+        padding: 2,
+    },
+    simpleTab: {
+        flex: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 6,
+        alignItems: 'center',
+    },
+    simpleActiveTab: {
+        backgroundColor: COLORS.primary,
+    },
+    simpleTabText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: COLORS.darkGray,
+    },
+    simpleActiveTabText: {
+        color: COLORS.white,
+    },
+    
     // Podcasts & Videos Styles
     tabContainer: {
         flexDirection: 'row',
@@ -3707,5 +3971,172 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 8,
         fontWeight: '500',
+    },
+    
+    // --- Life & Culture Styles ---
+    lifeCultureContainer: {
+        flex: 1,
+        backgroundColor: COLORS.lightGray,
+    },
+    lifeCultureSection: {
+        marginBottom: 24,
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: COLORS.white,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.lightGray,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.black,
+        marginLeft: 8,
+    },
+    lifeCultureCard: {
+        margin: 12,
+        backgroundColor: COLORS.white,
+        borderRadius: 12,
+        padding: 0,
+    },
+    cardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+    },
+    bookIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: COLORS.primaryLight + '20',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    articleIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: COLORS.accent + '20',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    opinionIconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: COLORS.secondary + '20',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    cardInfo: {
+        flex: 1,
+    },
+    cardTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: COLORS.black,
+        marginBottom: 4,
+    },
+    cardAuthor: {
+        fontSize: 14,
+        color: COLORS.primary,
+        marginBottom: 4,
+        fontWeight: '500',
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: COLORS.darkGray,
+        lineHeight: 20,
+    },
+    cardMeta: {
+        fontSize: 12,
+        color: COLORS.mediumGray,
+        marginTop: 4,
+        fontStyle: 'italic',
+    },
+    cardAction: {
+        padding: 8,
+    },
+    tabIcon: {
+        marginRight: 6,
+    },
+    
+    // --- Professional Section Headers ---
+    professionalSectionHeader: {
+        backgroundColor: COLORS.white,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 16,
+        marginBottom: 8,
+    },
+    professionalHeaderContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    professionalSectionTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: COLORS.black,
+        marginLeft: 12,
+        flex: 1,
+    },
+    professionalUnderline: {
+        height: 3,
+        backgroundColor: COLORS.primary,
+        width: 60,
+        borderRadius: 2,
+    },
+    
+    // --- Empty State Styles ---
+    emptyStateContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 32,
+        paddingVertical: 48,
+        minHeight: 300,
+    },
+    emptyStateIconContainer: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: COLORS.lightGray,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 24,
+        borderWidth: 2,
+        borderColor: COLORS.mediumGray + '30',
+    },
+    emptyStateTitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: COLORS.darkGray,
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    emptyStateMessage: {
+        fontSize: 16,
+        color: COLORS.mediumGray,
+        textAlign: 'center',
+        lineHeight: 24,
+        marginBottom: 24,
+    },
+    emptyStateButton: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    emptyStateButtonText: {
+        color: COLORS.white,
+        fontSize: 16,
+        fontWeight: '600',
     },
 });

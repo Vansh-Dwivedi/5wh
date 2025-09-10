@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5WH Radio Admin - Configuration</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .current-config {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .current-config h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .config-item {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .config-item strong {
+            color: #343a40;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-live {
+            background: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+        
+        .status-offline {
+            background: #dc3545;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .schedule-table th,
+        .schedule-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .schedule-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .schedule-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 5WH Radio Configuration</h1>
+            <p>Manage your radio stream settings and schedule</p>
+        </div>
+        
+        <div class="content">
+            <div id="alertContainer"></div>
+            
+            <div class="section">
+                <h2>Current Configuration</h2>
+                <div id="currentConfig" class="loading">Loading current configuration...</div>
+            </div>
+            
+            <div class="section">
+                <h2>Update Radio Settings</h2>
+                <form id="radioConfigForm">
+                    <div class="form-group">
+                        <label for="streamUrl">Stream URL *</label>
+                        <input type="url" id="streamUrl" name="streamUrl" required 
+                               placeholder="https://example.com/radio/stream">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title">Radio Title</label>
+                            <input type="text" id="title" name="title" 
+                                   placeholder="5WH Radio">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="currentShow">Current Show</label>
+                            <input type="text" id="currentShow" name="currentShow" 
+                                   placeholder="Live Programming">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currentArtist">Current Artist/Host</label>
+                            <input type="text" id="currentArtist" name="currentArtist" 
+                                   placeholder="5WH Media">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="listenersCount">Listeners Count</label>
+                            <input type="number" id="listenersCount" name="listenersCount" 
+                                   min="0" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isLive" name="isLive"> 
+                            Stream is currently live
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn">Update Configuration</button>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>Test Radio Stream</h2>
+                <p>Test the current radio configuration from the API:</p>
+                <button type="button" class="btn btn-secondary" onclick="testRadioStream()">
+                    Test Stream URL
+                </button>
+                <div id="testResult" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = null;
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Load current configuration
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch('/api/admin/radio-config', {
+                    headers: {
+                        'Authorization': 'Bearer ' + (localStorage.getItem('authToken') || 'admin-token')
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentConfig = data.data;
+                    displayCurrentConfig(currentConfig);
+                    populateForm(currentConfig);
+                } else {
+                    throw new Error('Failed to load configuration');
+                }
+            } catch (error) {
+                document.getElementById('currentConfig').innerHTML = 
+                    `<div class="alert-error">Error loading configuration: ${error.message}</div>`;
+            }
+        }
+
+        // Display current configuration
+        function displayCurrentConfig(config) {
+            const configDiv = document.getElementById('currentConfig');
+            const statusClass = config.isLive ? 'status-live' : 'status-offline';
+            const statusText = config.isLive ? 'LIVE' : 'OFFLINE';
+            
+            configDiv.innerHTML = `
+                <div class="current-config">
+                    <h3>
+                        <span class="status-indicator ${statusClass}"></span>
+                        Radio Status: ${statusText}
+                    </h3>
+                    <div class="config-item">
+                        <span><strong>Stream URL:</strong></span>
+                        <span>${config.streamUrl}</span>
+                    </div>
+                    <div class="config-item">
+                        <span><strong>Title:</strong></span>
+                        <span>${config.title}</span>
+                    </div>
+                    <div class="config-item">
+                        <span><strong>Current Show:</strong></span>
+                        <span>${config.currentShow}</span>
+                    </div>
+                    <div class="config-item">
+                        <span><strong>Current Artist:</strong></span>
+                        <span>${config.currentArtist}</span>
+                    </div>
+                    <div class="config-item">
+                        <span><strong>Listeners:</strong></span>
+                        <span>${config.listenersCount || 0}</span>
+                    </div>
+                    <div class="config-item">
+                        <span><strong>Last Updated:</strong></span>
+                        <span>${new Date(config.updatedAt).toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Populate form with current values
+        function populateForm(config) {
+            document.getElementById('streamUrl').value = config.streamUrl || '';
+            document.getElementById('title').value = config.title || '';
+            document.getElementById('currentShow').value = config.currentShow || '';
+            document.getElementById('currentArtist').value = config.currentArtist || '';
+            document.getElementById('listenersCount').value = config.listenersCount || 0;
+            document.getElementById('isLive').checked = config.isLive || false;
+        }
+
+        // Handle form submission
+        document.getElementById('radioConfigForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                streamUrl: formData.get('streamUrl'),
+                title: formData.get('title'),
+                currentShow: formData.get('currentShow'),
+                currentArtist: formData.get('currentArtist'),
+                listenersCount: parseInt(formData.get('listenersCount')) || 0,
+                isLive: formData.get('isLive') === 'on'
+            };
+
+            try {
+                const response = await fetch('/api/admin/radio-config', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + (localStorage.getItem('authToken') || 'admin-token')
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert('Radio configuration updated successfully!', 'success');
+                    loadCurrentConfig(); // Reload to show updated config
+                } else {
+                    showAlert(result.message || 'Failed to update configuration', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating configuration: ' + error.message, 'error');
+            }
+        });
+
+        // Test radio stream
+        async function testRadioStream() {
+            const testResult = document.getElementById('testResult');
+            testResult.innerHTML = '<p>Testing radio stream...</p>';
+
+            try {
+                const response = await fetch('/api/app/radio');
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    testResult.innerHTML = `
+                        <div class="alert-success">
+                            <strong>✅ Stream Test Successful!</strong><br>
+                            Title: ${data.data.title}<br>
+                            Stream URL: ${data.data.streamUrl}<br>
+                            Status: ${data.data.isLive ? 'LIVE' : 'OFFLINE'}<br>
+                            Current Show: ${data.data.currentShow}
+                        </div>
+                    `;
+                } else {
+                    testResult.innerHTML = `
+                        <div class="alert-error">
+                            <strong>❌ Stream Test Failed</strong><br>
+                            ${data.message || 'Unknown error'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                testResult.innerHTML = `
+                    <div class="alert-error">
+                        <strong>❌ Connection Error</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Load configuration when page loads
+        document.addEventListener('DOMContentLoaded', loadCurrentConfig);
+    </script>
+</body>
+</html>
