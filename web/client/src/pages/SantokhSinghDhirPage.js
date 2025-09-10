@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 
 const SantokhSinghDhirPage = () => {
-  const title = 'Santokh Singh Dhir Ji';
+  const title = 'Santokh Singh Dhir';
   const description =
     'Santokh Singh Dhir (1920–2010) was a renowned Punjabi writer and poet whose work explored social justice, class struggle, and everyday life, contributing profoundly to modern Punjabi literature.';
 

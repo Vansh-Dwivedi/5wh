@@ -780,7 +780,7 @@ const LifeCulturePage = () => {
                     <CardMedia
                       component="img"
                       height="100%"
-                      image={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${featuredOpinion.featuredImage}`}
+                      image={`https://5whmedia.com:5000${featuredOpinion.featuredImage}`}
                       alt={featuredOpinion.title}
                       sx={{ 
                         minHeight: { xs: 200, md: 300 },
@@ -863,7 +863,7 @@ const LifeCulturePage = () => {
                             <CardMedia
                               component="img"
                               height="200"
-                              image={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${article.featuredImage}`}
+                              image={`https://5whmedia.com:5000${article.featuredImage}`}
                               alt={article.title}
                               sx={{ objectFit: 'cover' }}
                             />

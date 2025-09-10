@@ -98,7 +98,7 @@ const PushNotificationManager = () => {
     setError('');
 
     try {
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/push-notification-test', {
+      const response = await fetch('https://5whmedia.com:5000/api/notifications/push-notification-test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -131,7 +131,7 @@ const PushNotificationManager = () => {
     setError('');
 
     try {
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/notifications/push-notification', {
+      const response = await fetch('https://5whmedia.com:5000/api/notifications/push-notification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

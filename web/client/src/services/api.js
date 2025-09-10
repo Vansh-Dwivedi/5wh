@@ -75,8 +75,8 @@ export const SourceDisplay = ({ source, variant = "caption", color = "text.secon
   return filteredSource;
 };
 
-const API_BASE_URL = 'http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api';
-export const MEDIA_BASE_URL = process.env.REACT_APP_MEDIA_URL || 'http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000';
+const API_BASE_URL = 'https://5whmedia.com:5000/api';
+export const MEDIA_BASE_URL = process.env.REACT_APP_MEDIA_URL || 'https://5whmedia.com:5000';
 
 // Create axios instance
 const api = axios.create({

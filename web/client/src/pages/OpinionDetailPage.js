@@ -113,13 +113,13 @@ const OpinionDetailPage = () => {
         <meta property="og:type" content="article" />
         <meta property="og:url" content={window.location.href} />
         {opinion.featuredImage && (
-          <meta property="og:image" content={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${opinion.featuredImage}`} />
+          <meta property="og:image" content={`https://5whmedia.com:5000${opinion.featuredImage}`} />
         )}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={opinion.title} />
         <meta name="twitter:description" content={opinion.excerpt} />
         {opinion.featuredImage && (
-          <meta name="twitter:image" content={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${opinion.featuredImage}`} />
+          <meta name="twitter:image" content={`https://5whmedia.com:5000${opinion.featuredImage}`} />
         )}
         <script type="application/ld+json">
           {JSON.stringify({
@@ -138,7 +138,7 @@ const OpinionDetailPage = () => {
             "datePublished": opinion.publishedAt || opinion.createdAt,
             "dateModified": opinion.updatedAt,
             ...(opinion.featuredImage && {
-              "image": `http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${opinion.featuredImage}`
+              "image": `https://5whmedia.com:5000${opinion.featuredImage}`
             })
           })}
         </script>
@@ -260,7 +260,7 @@ const OpinionDetailPage = () => {
             <Card sx={{ mb: 6, border: 'none', boxShadow: 'none' }}>
               <CardMedia
                 component="img"
-                image={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${opinion.featuredImage}`}
+                image={`https://5whmedia.com:5000${opinion.featuredImage}`}
                 alt={opinion.title}
                 sx={{
                   height: { xs: 300, md: 500 },

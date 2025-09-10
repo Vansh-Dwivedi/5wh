@@ -117,7 +117,7 @@ const AudioDetailPage = () => {
                   height="400"
                   image={
                     podcast.thumbnail?.url 
-                      ? `http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${podcast.thumbnail.url}`
+                      ? `https://5whmedia.com:5000${podcast.thumbnail.url}`
                       : '/api/placeholder/400/400'
                   }
                   alt={podcast.thumbnail?.alt || podcast.title}
@@ -178,9 +178,9 @@ const AudioDetailPage = () => {
                   style={{ width: '100%', height: '50px' }}
                   preload="metadata"
                 >
-                  <source src={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${podcast.audioUrl}`} type="audio/mpeg" />
-                  <source src={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${podcast.audioUrl}`} type="audio/wav" />
-                  <source src={`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${podcast.audioUrl}`} type="audio/ogg" />
+                  <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/mpeg" />
+                  <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/wav" />
+                  <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/ogg" />
                   Your browser does not support the audio element.
                 </audio>
               </Paper>

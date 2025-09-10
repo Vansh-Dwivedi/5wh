@@ -264,7 +264,7 @@ const EditNews = () => {
       }, 1000);
 
       return {
-        url: `http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000${(result.image || result.video).url}`,
+        url: `https://5whmedia.com:5000${(result.image || result.video).url}`,
         name: (result.image || result.video).name,
         size: (result.image || result.video).size,
         type: (result.image || result.video).type

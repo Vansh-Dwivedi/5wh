@@ -68,7 +68,7 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000',
+      'https://5whmedia.com:5000',
       'http://5whmedia.com',
       'https://5whmedia.com',
       'http://www.5whmedia.com',

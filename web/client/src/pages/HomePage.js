@@ -531,7 +531,7 @@ const HomePage = () => {
                   lineHeight: 1.2,
                 }}
               >
-                Santokh Singh Dhir Ji
+                Santokh Singh Dhir
               </Typography>
               <Box sx={{ 
                 height: 4, 

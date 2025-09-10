@@ -72,7 +72,7 @@ const LiveStreamManager = () => {
   const fetchStreams = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live');
+      const response = await fetch('https://5whmedia.com:5000/api/live');
       console.log('Fetch streams response status:', response.status);
       
       if (!response.ok) {
@@ -161,7 +161,7 @@ const LiveStreamManager = () => {
   const handleSubmit = async () => {
     try {
       const method = editingStream ? 'PUT' : 'POST';
-      const url = editingStream ? `http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live/${editingStream.id}` : 'http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live';
+      const url = editingStream ? `https://5whmedia.com:5000/api/live/${editingStream.id}` : 'https://5whmedia.com:5000/api/live';
       
       const submitData = {
         ...formData,
@@ -203,7 +203,7 @@ const LiveStreamManager = () => {
     }
 
     try {
-      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live/${streamId}`, {
+      const response = await fetch(`https://5whmedia.com:5000/api/live/${streamId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -226,7 +226,7 @@ const LiveStreamManager = () => {
 
   const handleToggleLive = async (stream) => {
     try {
-      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live/${stream.id}`, {
+      const response = await fetch(`https://5whmedia.com:5000/api/live/${stream.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
