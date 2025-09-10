@@ -12,6 +12,7 @@ import CreateUser from './CreateUser';
 import ManageNews from './ManageNews';
 import ManagePodcasts from './ManagePodcasts';
 import ManageVideos from './ManageVideos';
+import ManageRadio from './ManageRadio';
 import ManageAdvertisers from './ManageAdvertisers';
 import ManageBooks from './ManageBooks';
 import ManageLifeCulture from '../../components/admin/ManageLifeCulture';
@@ -92,6 +93,7 @@ const AdminRouter = () => {
       <Route path="/news" element={<ManageNews />} />
       <Route path="/podcasts" element={<ManagePodcasts />} />
       <Route path="/videos" element={<ManageVideos />} />
+      <Route path="/radio" element={<ManageRadio />} />
       <Route path="/live-streams" element={<LiveStreamManager />} />
       <Route path="/opinions" element={<ManageOpinions />} />
       <Route 

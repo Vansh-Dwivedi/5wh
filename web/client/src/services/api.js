@@ -236,6 +236,12 @@ export const adminAPI = {
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   fetchNews: () => api.post('/admin/news/fetch'),
   getAuditLogs: (params) => api.get('/admin/audit-logs', { params }),
+  
+  // Radio configuration APIs
+  getRadioConfig: () => api.get('/admin/radio-config'),
+  updateRadioConfig: (configData) => api.put('/admin/radio-config', configData),
+  addRadioSchedule: (scheduleData) => api.post('/admin/radio-config/schedule', scheduleData),
+  deleteRadioSchedule: (day) => api.delete(`/admin/radio-config/schedule/${day}`),
 };
 
 // Home aggregated API

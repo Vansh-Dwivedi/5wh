@@ -32,7 +32,8 @@ import {
   CloudDownload,
   RateReview,
   Notifications,
-  MenuBook
+  MenuBook,
+  Radio
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -446,6 +447,20 @@ const AdminDashboard = () => {
           
           <Grid item xs={12} sm={6} lg={4} xl={2}>
             <StatCard
+              title="Radio Stream"
+              value="LIVE"
+              icon={<Radio />}
+              color="#f57c00"
+              action={
+                <Button size="small" variant="outlined" onClick={() => navigate('/admin/radio')} fullWidth>
+                  Manage Radio
+                </Button>
+              }
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6} lg={4} xl={2}>
+            <StatCard
               title="Published Opinions"
               value={stats.publishedOpinions || 0}
               icon={<RateReview />}
@@ -677,6 +692,16 @@ const AdminDashboard = () => {
                   onClick={() => navigate('/admin/videos/create')}
                 >
                   Create Video
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<Radio />}
+                  onClick={() => navigate('/admin/radio')}
+                >
+                  Configure Radio
                 </Button>
               </Grid>
               {user?.role === 'admin' && (
