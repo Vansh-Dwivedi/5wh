@@ -196,6 +196,7 @@ app.use('/api/fetch', require('./routes/newsFetch')); // New news fetching route
 app.use('/api/advertisers', require('./routes/advertisers'));
 app.use('/api/live', require('./routes/live')); // Live streams routes
 app.use('/api/newsletter', require('./routes/newsletter')); // Newsletter subscription routes
+app.use('/api/app', require('./routes/appFetch')); // App-specific routes (radio, etc.)
 
 console.log('📱 Loading push notifications routes...');
 app.use('/api/notifications', require('./routes/notifications')); // Push notifications routes

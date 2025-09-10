@@ -52,22 +52,19 @@ router.use(limiter);
 // Log all requests
 router.use(logRequest);
 
-// Auth middleware
-router.use(validateToken);
+// News endpoint with pagination, filtering, search, cache (requires auth)
+router.get('/news', validateToken, cacheMiddleware, getNews);
 
-// News endpoint with pagination, filtering, search, cache
-router.get('/news', cacheMiddleware, getNews);
+// Live streams endpoint (real-time) (requires auth)
+router.get('/liveStreams', validateToken, cacheMiddleware, getLiveStreams);
 
-// Live streams endpoint (real-time)
-router.get('/liveStreams', cacheMiddleware, getLiveStreams);
-
-// Radio endpoint
+// Radio endpoint (public - no auth required)
 router.get('/radio', cacheMiddleware, getRadio);
 
-// Podcasts endpoint with pagination
-router.get('/podcasts', cacheMiddleware, getPodcasts);
+// Podcasts endpoint with pagination (requires auth)
+router.get('/podcasts', validateToken, cacheMiddleware, getPodcasts);
 
-// Videos endpoint with pagination
-router.get('/videos', cacheMiddleware, getVideos);
+// Videos endpoint with pagination (requires auth)
+router.get('/videos', validateToken, cacheMiddleware, getVideos);
 
 module.exports = router;

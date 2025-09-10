@@ -176,3 +176,6 @@
 [2025-09-03T13:07:18.639Z] GET /app/fetch/news?page=2&limit=8 IP:127.0.0.1
 [2025-09-03T13:08:58.850Z] GET /app/fetch/news?page=3&limit=8 IP:127.0.0.1
 [2025-09-09T13:12:59.627Z] GET /app/fetch/news IP:127.0.0.1
+[2025-09-10T13:06:36.217Z] GET /api/app/radio IP:127.0.0.1
+[2025-09-10T13:07:11.878Z] GET /api/app/radio IP:127.0.0.1
+[2025-09-10T13:07:57.905Z] GET /api/app/radio IP:127.0.0.1
