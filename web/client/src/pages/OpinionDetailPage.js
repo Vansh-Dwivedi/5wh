@@ -15,6 +15,7 @@ import {
   IconButton,
   Avatar
 } from '@mui/material';
+import { buildApiUrl } from '../config/api';
 import {
   ArrowBack,
   Share,
@@ -38,7 +39,7 @@ const OpinionDetailPage = () => {
   const fetchOpinion = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions/${slug}`);
+      const response = await fetch(buildApiUrl(`/api/opinions/${slug}`));
       const data = await response.json();
       
       if (data.success) {

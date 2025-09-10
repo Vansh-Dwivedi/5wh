@@ -567,7 +567,7 @@ const HomePage = () => {
                 }}>
                   <CardMedia
                     component="img"
-                    src="https://5whmedia.com/wp-content/uploads/2025/08/Santokh-Ji.webp"
+                    src="https://5whmedia.com/scholarly-figure.jpg"
                     alt="Santokh Singh Dhir"
                     sx={{ 
                       width: '100%', 

@@ -24,21 +24,22 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      mediaSrc: ["'self'", "data:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", "https:", "data:"],
+      defaultSrc: ["'self'", "http:", "https:", "data:", "blob:"],
+      styleSrc: ["'self'", "'unsafe-inline'", "http:", "https:"],
+      scriptSrc: ["'self'", "http:", "https:"],
+      imgSrc: ["'self'", "http:", "https:", "data:"],
+      mediaSrc: ["'self'", "http:", "https:", "data:"],
+      connectSrc: ["'self'", "http:", "https:"],
+      fontSrc: ["'self'", "http:", "https:", "data:"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
       frameAncestors: ["'self'"],
-      upgradeInsecureRequests: [],
+      // Remove upgradeInsecureRequests since you want to allow HTTP
     },
   },
 }));
+
 app.use(compression());
 // Structured logging with request id
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms reqId=:req[id]', {
@@ -68,6 +69,11 @@ const corsOptions = {
     
     const allowedOrigins = [
       'http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000',
+      'http://5whmedia.com',
+      'https://5whmedia.com',
+      'http://www.5whmedia.com',
+      'https://www.5whmedia.com',
+      'http://localhost:3000',
       'http://127.0.0.1:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3001',

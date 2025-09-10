@@ -33,6 +33,7 @@ import {
   Refresh
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { buildApiUrl } from '../config/api';
 
 const LivePage = () => {
   const [liveStreams, setLiveStreams] = useState([]);
@@ -99,7 +100,7 @@ const LivePage = () => {
 
     try {
       console.log('Fetching live streams...');
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/live');
+      const response = await fetch(buildApiUrl('/api/live'));
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

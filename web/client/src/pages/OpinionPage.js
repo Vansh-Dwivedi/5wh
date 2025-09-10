@@ -17,6 +17,7 @@ import {
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../config/api';
 
 const OpinionPage = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const OpinionPage = () => {
   const fetchOpinions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions?page=${pagination.current}&limit=9`);
+      const response = await fetch(buildApiUrl(`/api/opinions?page=${pagination.current}&limit=9`));
       const data = await response.json();
       
       if (data.success) {
@@ -57,7 +58,7 @@ const OpinionPage = () => {
 
   const fetchFeaturedOpinions = async () => {
     try {
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions/featured');
+      const response = await fetch(buildApiUrl('/api/opinions/featured'));
       const data = await response.json();
       
       if (data.success) {

@@ -17,6 +17,7 @@ import {
   Tab,
   Button,
 } from '@mui/material';
+import { buildApiUrl } from '../config/api';
 import {
   MenuBook,
   Event,
@@ -108,7 +109,7 @@ const LifeCulturePage = () => {
   const fetchOpinions = async () => {
     try {
       setOpinionLoading(true);
-      const response = await fetch(`http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions?page=${opinionPagination.current}&limit=9`);
+      const response = await fetch(buildApiUrl(`/api/opinions?page=${opinionPagination.current}&limit=9`));
       const data = await response.json();
       
       if (data.success) {
@@ -127,7 +128,7 @@ const LifeCulturePage = () => {
 
   const fetchFeaturedOpinions = async () => {
     try {
-      const response = await fetch('http://ec2-16-52-123-203.ca-central-1.compute.amazonaws.com:5000/api/opinions/featured');
+      const response = await fetch(buildApiUrl('/api/opinions/featured'));
       const data = await response.json();
       
       if (data.success) {
