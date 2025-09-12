@@ -510,7 +510,7 @@ const NewsPage = () => {
                       src={
                         article.featuredImage.url.startsWith('http') 
                           ? article.featuredImage.url 
-                          : `https://5whmedia.com:5000${article.featuredImage.url}`
+                          : `http://5whmedia.com${article.featuredImage.url}`
                       }
                       alt={article.featuredImage?.alt || article.title}
                       style={{

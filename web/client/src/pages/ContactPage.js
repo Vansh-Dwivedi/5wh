@@ -18,6 +18,9 @@ import {
   Facebook, 
   YouTube, 
   Instagram, 
+  WhatsApp,
+  Telegram,
+  MusicNote,
   Send
 } from '@mui/icons-material';
 import { Helmet } from 'react-helmet-async';
@@ -88,6 +91,10 @@ const ContactPage = () => {
     { icon: <Facebook />, url: 'https://www.facebook.com/5whmedia/', label: 'Facebook' },
     { icon: <YouTube />, url: 'https://www.youtube.com/@5wh_media', label: 'YouTube' },
     { icon: <Instagram />, url: 'https://www.instagram.com/5whmedia/', label: 'Instagram' },
+  // New social platforms
+  { icon: <WhatsApp />, url: 'https://wa.me/919876297823', label: 'WhatsApp' },
+  { icon: <Telegram />, url: 'https://t.me/5whmedia', label: 'Telegram' },
+  { icon: <MusicNote />, url: 'https://www.tiktok.com/@5whmedia', label: 'TikTok' },
   ];
 
   return (

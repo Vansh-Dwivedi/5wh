@@ -137,7 +137,7 @@ JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 MAX_FILE_SIZE=500MB
 
 # CORS Settings
-CLIENT_URL=https://5whmedia.com:5000
+CLIENT_URL=http://5whmedia.com
 ```
 
 ### 5. Start MongoDB
@@ -166,8 +166,8 @@ npm run client
 ```
 
 The application will be available at:
-- Frontend: https://5whmedia.com:5000
-- Backend API: https://5whmedia.com:5000
+- Frontend: http://5whmedia.com
+- Backend API: http://5whmedia.com
 
 ## 📱 Mobile App Conversion
 

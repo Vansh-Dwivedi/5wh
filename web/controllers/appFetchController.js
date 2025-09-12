@@ -213,7 +213,7 @@ exports.getRadio = async (req, res) => {
       });
       return res.status(200).json({
         data: {
-          streamUrl: 'https://5whmedia.com/radio/stream',
+          streamUrl: 'http://5whmedia.com/radio/stream',
           title: '5WH Radio',
           artist: 'Live Programming',
           isLive: true,
@@ -253,7 +253,7 @@ exports.getRadio = async (req, res) => {
     });
     res.status(200).json({
       data: {
-        streamUrl: 'https://5whmedia.com/radio/stream',
+        streamUrl: 'http://5whmedia.com/radio/stream',
         title: '5WH Radio',
         artist: 'Live Programming',
         isLive: true,

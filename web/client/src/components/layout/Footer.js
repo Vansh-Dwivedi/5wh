@@ -14,6 +14,9 @@ import {
   YouTube,
   Instagram,
   LinkedIn,
+  WhatsApp,
+  Telegram,
+  MusicNote,
   Email,
   Phone,
   LocationOn,
@@ -27,6 +30,10 @@ const Footer = () => {
     { icon: <Facebook />, url: 'https://www.facebook.com/5whmedia/', label: 'Facebook' },
     { icon: <YouTube />, url: 'https://www.youtube.com/@5wh_media', label: 'YouTube' },
     { icon: <Instagram />, url: 'https://www.instagram.com/5whmedia/', label: 'Instagram' },
+  // New social platforms
+  { icon: <WhatsApp />, url: 'https://wa.me/919876297823', label: 'WhatsApp' },
+  { icon: <Telegram />, url: 'https://t.me/5whmedia', label: 'Telegram' },
+  { icon: <MusicNote />, url: 'https://www.tiktok.com/@5whmedia', label: 'TikTok' },
   ];
 
   const quickLinks = [
@@ -294,6 +301,20 @@ const Footer = () => {
           >
             Established 2024 • Independent Journalism
           </Typography>
+          <Link
+            href="https://www.linkedin.com/in/vanshcoderdwivedi"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: '#cccccc',
+              fontSize: '0.75rem',
+              textDecoration: 'none',
+              '&:hover': { color: '#c41e3a', textDecoration: 'underline' },
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Vansh Dwivedi - Kalakaar Studios
+          </Link>
         </Box>
       </Container>
     </Box>

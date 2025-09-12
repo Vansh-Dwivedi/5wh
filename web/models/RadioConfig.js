@@ -4,7 +4,7 @@ const radioConfigSchema = new mongoose.Schema({
   streamUrl: {
     type: String,
     required: true,
-    default: 'https://5whmedia.com/radio/stream'
+    default: 'http://5whmedia.com/radio/stream'
   },
   title: {
     type: String,

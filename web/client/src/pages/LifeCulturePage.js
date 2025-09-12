@@ -34,7 +34,12 @@ import { motion } from 'framer-motion';
 
 const LifeCulturePage = () => {
   const navigate = useNavigate();
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0); // 0 lifestyle, 1 opinion, 2 culture, 3 health, 4 history
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [blogError, setBlogError] = useState('');
+  const [blogPage, setBlogPage] = useState(1);
+  const [blogPages, setBlogPages] = useState(1);
   
   // Life & Culture state
   const [articles, setArticles] = useState([]);
@@ -79,8 +84,34 @@ const LifeCulturePage = () => {
     } else if (tabValue === 1) {
       fetchOpinions();
       fetchFeaturedOpinions();
+    } else if (tabValue >=2 && tabValue <=4) {
+      const map = { 2: 'culture', 3: 'health', 4: 'history' };
+      fetchBlogs(map[tabValue]);
     }
-  }, [page, tabValue, opinionPagination.current]);
+  }, [page, tabValue, opinionPagination.current, blogPage]);
+
+  const fetchBlogs = async (tabKey) => {
+    try {
+      setBlogLoading(true);
+      setBlogError('');
+      const limit = 12;
+      const res = await fetch(buildApiUrl(`/api/blogs?tab=${tabKey}&page=${blogPage}&limit=${limit}`));
+      const data = await res.json();
+      if (data.success) {
+        setBlogPosts(data.data);
+        setBlogPages(data.pagination.pages || 1);
+      } else {
+        setBlogError('Failed to load content');
+        setBlogPosts([]);
+      }
+    } catch (e) {
+      console.error('Error fetching blogs', e);
+      setBlogError('Failed to load content');
+      setBlogPosts([]);
+    } finally {
+      setBlogLoading(false);
+    }
+  };
 
   const fetchLifeCultureContent = () => {
     try {
@@ -216,22 +247,18 @@ const LifeCulturePage = () => {
   };
 
   const handlePageChange = (event, newPage) => {
-    if (tabValue === 0) {
-      setPage(newPage);
-    } else {
-      setOpinionPagination(prev => ({ ...prev, current: newPage }));
-    }
+    if (tabValue === 0) setPage(newPage);
+    else if (tabValue === 1) setOpinionPagination(prev => ({ ...prev, current: newPage }));
+    else if (tabValue >=2) setBlogPage(newPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
     // Reset pagination when switching tabs
-    if (newValue === 0) {
-      setPage(1);
-    } else {
-      setOpinionPagination(prev => ({ ...prev, current: 1 }));
-    }
+  if (newValue === 0) setPage(1);
+  else if (newValue === 1) setOpinionPagination(prev => ({ ...prev, current: 1 }));
+  else setBlogPage(1);
   };
 
   const formatDate = (dateString) => {
@@ -780,7 +807,7 @@ const LifeCulturePage = () => {
                     <CardMedia
                       component="img"
                       height="100%"
-                      image={`https://5whmedia.com:5000${featuredOpinion.featuredImage}`}
+                      image={`http://5whmedia.com${featuredOpinion.featuredImage}`}
                       alt={featuredOpinion.title}
                       sx={{ 
                         minHeight: { xs: 200, md: 300 },
@@ -863,7 +890,7 @@ const LifeCulturePage = () => {
                             <CardMedia
                               component="img"
                               height="200"
-                              image={`https://5whmedia.com:5000${article.featuredImage}`}
+                              image={`http://5whmedia.com${article.featuredImage}`}
                               alt={article.title}
                               sx={{ objectFit: 'cover' }}
                             />
@@ -1001,7 +1028,7 @@ const LifeCulturePage = () => {
         <title>Life & Culture - 5WH Media</title>
         <meta name="description" content="Explore lifestyle, culture, traditions, and modern living stories from 5WH Media. Discover how heritage meets contemporary life." />
         <meta name="keywords" content="life, culture, lifestyle, traditions, heritage, Punjab culture, modern living" />
-        <link rel="canonical" href="https://5whmedia.com/life-culture" />
+        <link rel="canonical" href="http://5whmedia.com/life-culture" />
       </Helmet>
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -1077,6 +1104,9 @@ const LifeCulturePage = () => {
             >
               <Tab label="Lifestyle & Culture" />
               <Tab label="5WH Opinion" />
+              <Tab label="Culture" />
+              <Tab label="Health" />
+              <Tab label="History" />
             </Tabs>
           </Box>
         </Box>
@@ -1084,6 +1114,53 @@ const LifeCulturePage = () => {
         {/* Tab Content */}
         {tabValue === 0 && renderLifeCultureContent()}
         {tabValue === 1 && renderOpinionContent()}
+        {tabValue >=2 && (
+          <Box sx={{ mb: 8 }}>
+            {blogLoading && (
+              <Box sx={{ display:'flex', justifyContent:'center', py:10 }}><CircularProgress /></Box>
+            )}
+            {blogError && <Alert severity="error" sx={{ mb:3 }}>{blogError}</Alert>}
+            {!blogLoading && !blogError && blogPosts.length === 0 && (
+              <Typography textAlign="center" color="text.secondary" sx={{ py:10 }}>
+                No articles available yet.
+              </Typography>
+            )}
+            <Grid container spacing={3}>
+              {blogPosts.map(post => (
+                <Grid item xs={12} sm={6} md={4} key={post._id}>
+                  <Card component={RouterLink} to={`/blogs/${post.slug}`} sx={{ textDecoration:'none', height:'100%' }}>
+                    {post.featuredImage && (
+                      <CardMedia
+                        component="img"
+                        height="180"
+                        image={post.featuredImage.startsWith('http') ? post.featuredImage : `http://5whmedia.com${post.featuredImage}`}
+                        alt={post.title}
+                      />
+                    )}
+                    <CardContent>
+                      <Typography variant="subtitle2" color="primary" sx={{ fontWeight:600, mb:0.5 }}>
+                        {post.tab.charAt(0).toUpperCase() + post.tab.slice(1)}
+                      </Typography>
+                      <Typography variant="h6" sx={{ fontWeight:600, mb:1, fontSize:'1rem' }}>
+                        {post.title}
+                      </Typography>
+                      {post.excerpt && (
+                        <Typography variant="body2" color="text.secondary" sx={{ display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                          {post.excerpt}
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+            {blogPages > 1 && (
+              <Box sx={{ mt:6, display:'flex', justifyContent:'center' }}>
+                <Pagination count={blogPages} page={blogPage} onChange={handlePageChange} color="primary" />
+              </Box>
+            )}
+          </Box>
+        )}
       </Container>
     </>
   );

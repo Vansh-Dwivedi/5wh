@@ -221,7 +221,7 @@ const AdminDashboard = () => {
         case 'News': updater = (id,data)=> newsAPI.update(id, { status:'published' }); break;
         case 'Video': updater = (id,data)=> videosAPI.update(id, (()=>{ const fd=new FormData(); fd.append('status','published'); return fd; })()); break;
         case 'Podcast': updater = (id,data)=> podcastsAPI.update(id, (()=>{ const fd=new FormData(); fd.append('status','published'); return fd; })()); break;
-        case 'Opinion': updater = async(id)=> fetch(`https://5whmedia.com:5000/api/opinions/${id}`, { method:'PUT', headers:{ 'Authorization':`Bearer ${localStorage.getItem('token')}` }, body: ( ()=>{ const fd = new FormData(); fd.append('status','published'); return fd; })()}); break;
+        case 'Opinion': updater = async(id)=> fetch(`http://5whmedia.com/api/opinions/${id}`, { method:'PUT', headers:{ 'Authorization':`Bearer ${localStorage.getItem('token')}` }, body: ( ()=>{ const fd = new FormData(); fd.append('status','published'); return fd; })()}); break;
         default: return;
       }
   await updater(item.id);
@@ -248,7 +248,7 @@ const AdminDashboard = () => {
         case 'News': updater = (id)=> newsAPI.update(id, { status:'scheduled', scheduledAt: iso }); break;
         case 'Video': updater = (id)=> { const fd=new FormData(); fd.append('status','scheduled'); fd.append('scheduledAt', iso); return videosAPI.update(id, fd); }; break;
         case 'Podcast': updater = (id)=> { const fd=new FormData(); fd.append('status','scheduled'); fd.append('scheduledAt', iso); return podcastsAPI.update(id, fd); }; break;
-        case 'Opinion': updater = (id)=> fetch(`https://5whmedia.com:5000/api/opinions/${id}`, { method:'PUT', headers:{ 'Authorization':`Bearer ${localStorage.getItem('token')}` }, body:(()=>{ const fd=new FormData(); fd.append('status','scheduled'); fd.append('scheduledAt', iso); return fd; })()}); break;
+        case 'Opinion': updater = (id)=> fetch(`http://5whmedia.com/api/opinions/${id}`, { method:'PUT', headers:{ 'Authorization':`Bearer ${localStorage.getItem('token')}` }, body:(()=>{ const fd=new FormData(); fd.append('status','scheduled'); fd.append('scheduledAt', iso); return fd; })()}); break;
         default: return;
       }
   await updater(rescheduleItem.id);

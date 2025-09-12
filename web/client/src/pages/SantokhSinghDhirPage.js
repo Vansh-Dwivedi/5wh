@@ -9,14 +9,14 @@ const SantokhSinghDhirPage = () => {
   const description =
     'Santokh Singh Dhir (1920–2010) was a renowned Punjabi writer and poet whose work explored social justice, class struggle, and everyday life, contributing profoundly to modern Punjabi literature.';
 
-  const imageUrl = 'https://5whmedia.com/wp-content/uploads/2025/08/Santokh-Ji.webp';
+  const imageUrl = 'http://5whmedia.com/wp-content/uploads/2025/08/Santokh-Ji.webp';
 
   return (
     <>
       <Helmet>
         <title>Santokh Singh Dhir - 5WH Media</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href="https://5whmedia.com/santokh-singh-dhir/" />
+        <link rel="canonical" href="http://5whmedia.com/santokh-singh-dhir/" />
       </Helmet>
 
       {/* Container 1: Hero + Biography (equal-width columns) */}

@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
   Box,
   Paper,
   Grid,
-  Card,
-  CardContent,
   IconButton,
   Button,
   Dialog,
@@ -19,18 +17,11 @@ import {
   FormControlLabel,
   Switch,
   Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Fab
 } from '@mui/material';
 import {
   ArrowBack,
   Radio,
-  Edit,
   Delete,
   Add,
   Save,
@@ -55,6 +46,24 @@ const ManageRadio = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  // Player state
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handleTogglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play().then(()=> setIsPlaying(true)).catch(err => {
+        console.error('Play failed', err);
+      });
+    }
+  };
+
+  const handleAudioEnded = () => setIsPlaying(false);
+
   const [configDialog, setConfigDialog] = useState(false);
   const [scheduleDialog, setScheduleDialog] = useState(false);
   const [deleteScheduleDialog, setDeleteScheduleDialog] = useState(false);
@@ -227,57 +236,30 @@ const ManageRadio = () => {
       </Helmet>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header Section */}
-        <Paper 
-          elevation={0}
-          sx={{ 
-            p: 4, 
-            mb: 4, 
-            borderRadius: 3,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white'
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <IconButton 
-                onClick={navigateToDashboard}
-                sx={{ color: 'white' }}
-              >
-                <ArrowBack />
-              </IconButton>
-              <Radio sx={{ fontSize: 40 }} />
-              <Box>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-                  Radio Management
-                </Typography>
-                <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-                  Configure radio stream settings and schedule
-                </Typography>
-              </Box>
+        {/* Header */}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton onClick={navigateToDashboard}>
+              <ArrowBack />
+            </IconButton>
+            <Radio sx={{ fontSize: 40, color: 'primary.main' }} />
+            <Box>
+              <Typography variant="h4" fontWeight="bold">
+                Radio Management
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Single station stream & weekly schedule
+              </Typography>
             </Box>
-            
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<Settings />}
-              onClick={() => setConfigDialog(true)}
-              sx={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.3)',
-                color: 'white',
-                fontWeight: 'bold',
-                px: 3,
-                '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.3)'
-                }
-              }}
-            >
-              Update Settings
-            </Button>
           </Box>
-        </Paper>
+          <Button
+            variant="outlined"
+            startIcon={<Settings />}
+            onClick={() => setConfigDialog(true)}
+          >
+            Update Settings
+          </Button>
+        </Box>
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
@@ -286,168 +268,139 @@ const ManageRadio = () => {
         )}
 
         <Grid container spacing={3}>
-          {/* Current Configuration Card */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                  <Radio color="primary" />
-                  <Typography variant="h6" fontWeight="bold">
-                    Current Configuration
+          {/* Single Radio Section (no card) */}
+          <Grid item xs={12} md={5}>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Radio color="primary" />
+                <Typography variant="h6" fontWeight="bold">Radio Station</Typography>
+                <Chip 
+                  label={radioConfig?.isLive ? 'LIVE' : 'OFFLINE'}
+                  color={radioConfig?.isLive ? 'success' : 'default'}
+                  size="small"
+                />
+              </Box>
+              {radioConfig ? (
+                <Box>
+                  <Typography variant="body1" fontWeight="bold" sx={{ mb: 0.5 }}>
+                    {radioConfig.title || 'Untitled Station'}
                   </Typography>
-                  <Chip 
-                    label={radioConfig?.isLive ? 'LIVE' : 'OFFLINE'} 
-                    color={radioConfig?.isLive ? 'success' : 'default'}
-                    size="small"
-                  />
+                  {radioConfig.currentShow && (
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      Show: <strong>{radioConfig.currentShow}</strong>
+                    </Typography>
+                  )}
+                  {radioConfig.currentArtist && (
+                    <Typography variant="body2" sx={{ mb: 1 }}>
+                      Host/Artist: <strong>{radioConfig.currentArtist}</strong>
+                    </Typography>
+                  )}
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                    Listeners: {radioConfig.listenersCount || 0} • Updated {new Date(radioConfig.updatedAt).toLocaleTimeString()}
+                  </Typography>
+                  {radioConfig.streamUrl ? (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}> 
+                        <Button
+                          variant="contained"
+                          size="small"
+                          startIcon={isPlaying ? <Stop /> : <PlayArrow />}
+                          onClick={handleTogglePlay}
+                        >
+                          {isPlaying ? 'Stop' : 'Play'}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<Refresh />}
+                          onClick={fetchRadioConfig}
+                        >
+                          Refresh
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={testRadioStream}
+                        >
+                          Test
+                        </Button>
+                      </Box>
+                      <audio
+                        ref={audioRef}
+                        src={radioConfig.streamUrl}
+                        onEnded={handleAudioEnded}
+                        style={{ width: '100%', marginTop: 12 }}
+                        controls
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                        Stream URL: {radioConfig.streamUrl}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">No stream URL configured.</Typography>
+                  )}
                 </Box>
-                
-                {radioConfig ? (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Stream URL:</strong>
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 2, wordBreak: 'break-all' }}>
-                      {radioConfig.streamUrl}
-                    </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Radio Title:</strong>
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      {radioConfig.title}
-                    </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Current Show:</strong>
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      {radioConfig.currentShow}
-                    </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Current Artist:</strong>
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      {radioConfig.currentArtist}
-                    </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Listeners:</strong>
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 2 }}>
-                      {radioConfig.listenersCount || 0}
-                    </Typography>
-                    
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      <strong>Last Updated:</strong>
-                    </Typography>
-                    <Typography variant="body1">
-                      {new Date(radioConfig.updatedAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                ) : (
-                  <Typography color="text.secondary">No configuration found</Typography>
-                )}
-
-                <Box sx={{ mt: 3, display: 'flex', gap: 1 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<PlayArrow />}
-                    onClick={testRadioStream}
-                    size="small"
-                  >
-                    Test Stream
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<Refresh />}
-                    onClick={fetchRadioConfig}
-                    size="small"
-                  >
-                    Refresh
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+              ) : (
+                <Typography color="text.secondary">No configuration found</Typography>
+              )}
+            </Paper>
           </Grid>
 
-          {/* Schedule Card */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent>
+          {/* Schedule (retain card) */}
+          <Grid item xs={12} md={7}>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Schedule color="primary" />
+                  <Typography variant="h6" fontWeight="bold">Weekly Schedule</Typography>
+                </Box>
+                <Button size="small" startIcon={<Add />} onClick={() => setScheduleDialog(true)}>Add Schedule</Button>
+              </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Schedule color="primary" />
-                    <Typography variant="h6" fontWeight="bold">
-                      Weekly Schedule
-                    </Typography>
-                  </Box>
-                  <Button
-                    size="small"
-                    startIcon={<Add />}
-                    onClick={() => setScheduleDialog(true)}
-                  >
-                    Add Schedule
-                  </Button>
                 </Box>
 
                 {radioConfig?.schedule && radioConfig.schedule.length > 0 ? (
-                  <TableContainer>
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell><strong>Day</strong></TableCell>
-                          <TableCell><strong>Time</strong></TableCell>
-                          <TableCell><strong>Show</strong></TableCell>
-                          <TableCell><strong>Actions</strong></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {radioConfig.schedule.map((schedule, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              <Chip 
-                                label={schedule.day.charAt(0).toUpperCase() + schedule.day.slice(1)}
-                                size="small"
-                                variant="outlined"
-                              />
-                            </TableCell>
-                            <TableCell>{schedule.startTime} - {schedule.endTime}</TableCell>
-                            <TableCell>
-                              <Typography variant="body2" fontWeight="bold">
-                                {schedule.showName}
-                              </Typography>
-                              {schedule.host && (
-                                <Typography variant="caption" color="text.secondary">
-                                  Host: {schedule.host}
-                                </Typography>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => {
-                                  setSelectedScheduleDay(schedule.day);
-                                  setDeleteScheduleDialog(true);
-                                }}
-                              >
-                                <Delete />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                  <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' } }}>
+                    {radioConfig.schedule.map((schedule, index) => (
+                      <Paper key={index} variant="outlined" sx={{ p: 2, borderRadius: 2, position: 'relative' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
+                          <Chip 
+                            label={schedule.day.charAt(0).toUpperCase() + schedule.day.slice(1)}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => {
+                              setSelectedScheduleDay(schedule.day);
+                              setDeleteScheduleDialog(true);
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 0.5 }}>
+                          {schedule.showName}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                          {schedule.startTime} - {schedule.endTime}
+                        </Typography>
+                        {schedule.host && (
+                          <Typography variant="caption" color="text.secondary">
+                            Host: {schedule.host}
+                          </Typography>
+                        )}
+                      </Paper>
+                    ))}
+                  </Box>
                 ) : (
                   <Typography color="text.secondary" textAlign="center" sx={{ py: 4 }}>
                     No schedule configured
                   </Typography>
                 )}
-              </CardContent>
-            </Card>
+            </Paper>
           </Grid>
         </Grid>
 

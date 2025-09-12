@@ -567,7 +567,7 @@ const HomePage = () => {
                 }}>
                   <CardMedia
                     component="img"
-                    src="https://5whmedia.com/scholarly-figure.jpg"
+                    src="http://5whmedia.com/scholarly-figure.jpg"
                     alt="Santokh Singh Dhir"
                     sx={{ 
                       width: '100%', 
@@ -738,7 +738,7 @@ const HomePage = () => {
                         }
                       }
                     }}
-                    onClick={() => window.open(`https://5whmedia.com/santokh-singh-dhir/${p.s}`, '_blank')}
+                    onClick={() => window.open(`/santokh-singh-dhir/${p.s}`, '_blank')}
                   >
                     <CardContent sx={{ p: 3.5, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80px' }}>
                       <Typography 

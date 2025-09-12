@@ -85,7 +85,7 @@ const CreateOpinion = () => {
   const res = await opinionsAPI.getById(id);
   const op = res.data.data;
   setOpinion(op);
-  if (op.featuredImage) setImagePreview(`https://5whmedia.com:5000${op.featuredImage}`);
+  if (op.featuredImage) setImagePreview(`http://5whmedia.com${op.featuredImage}`);
     } catch (error) {
       console.error('Error fetching opinion:', error);
       setError('Failed to fetch opinion');

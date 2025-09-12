@@ -642,54 +642,103 @@ const fetchWithToken = async (endpoint, queryParams = {}) => {
     }
 };
 
+// Enhanced radio config fetch with multiple fallbacks & diagnostics
+const RADIO_ENDPOINT_CANDIDATES = [
+    RADIO_API_URL,                                 // configured constant
+    'https://5whmedia.com/api/radio',
+    'https://5whmedia.com/api/app/radio/config',
+    'https://5whmedia.com/api/radio/config',
+    'https://5whmedia.com/app/radio',
+    `${API_BASE_URL}/radio`,                       // token-protected fetch endpoint
+];
+
+const normalizeRadioData = (data) => {
+    if (!data) return null;
+    // Sometimes API may wrap in data / result
+    const core = data.streamUrl ? data : data.data || data.result || data.radio || data.config || {};
+    if (!core || !core.streamUrl) return null;
+    return {
+        streamUrl: core.streamUrl,
+        title: core.title || core.name || '5WH Live Radio',
+        artist: core.artist || core.currentShow || 'Live Stream',
+        isLive: core.isLive !== undefined ? core.isLive : true,
+        currentShow: core.currentShow || core.program || 'Live Broadcast',
+        _raw: data
+    };
+};
+
 const fetchRadioConfig = async () => {
+    console.log('🔎 Attempting to load radio config from candidates...');
+
+    // Allow override via (future) AsyncStorage or global (dev quick test)
     try {
-        console.log('🔄 Fetching radio config from:', RADIO_API_URL);
-        
-        const response = await fetch(RADIO_API_URL, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        console.log(`📊 Radio config response status: ${response.status} ${response.statusText}`);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`❌ Radio config HTTP error! status: ${response.status}, body: ${errorText}`);
-            // Don't throw error, just return null to use fallback
-            return null;
-        }
-
-        const data = await response.json();
-        console.log(`✅ Successfully fetched radio config:`, data);
-        
-        // Check if the response has the expected structure
-        if (data && data.success !== false) {
+        if (global.RADIO_STREAM_OVERRIDE) {
+            console.warn('⚠️ Using global RADIO_STREAM_OVERRIDE');
             return {
-                streamUrl: data.streamUrl,
-                title: data.title || '5WH Live Radio',
-                artist: data.artist || data.currentShow || 'Live Stream',
-                isLive: data.isLive !== undefined ? data.isLive : true,
-                currentShow: data.currentShow || 'Live Broadcast'
+                streamUrl: global.RADIO_STREAM_OVERRIDE,
+                title: '5WH Live Radio (Override)',
+                artist: 'Override Source',
+                isLive: true,
+                currentShow: 'Override'
             };
-        } else {
-            console.log('Invalid radio config response, using fallback');
-            return null;
         }
-    } catch (error) {
-        console.error('Error fetching radio config:', error);
-        
-        // Check if it's a CORS error
-        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-            console.warn(`🚨 CORS ERROR DETECTED for radio config:`);
-            console.warn(`🔧 Your backend server needs to allow requests from: ${window.location?.origin || 'https://localhost:8081'}`);
+    } catch (_) {}
+
+    const attemptLogs = [];
+    for (const endpoint of RADIO_ENDPOINT_CANDIDATES) {
+        if (!endpoint) continue;
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            // If using the token-based fetch path, add Authorization header
+            if (endpoint.startsWith(API_BASE_URL)) {
+                headers['Authorization'] = `Bearer ${API_TOKEN}`;
+            }
+            console.log(`🎯 Trying radio endpoint: ${endpoint}`);
+            const res = await fetch(endpoint, { method: 'GET', headers });
+            const statusInfo = `${res.status} ${res.statusText}`;
+            let bodyText = '';
+            if (!res.ok) {
+                try { bodyText = await res.text(); } catch (_) {}
+                attemptLogs.push({ endpoint, status: statusInfo, body: bodyText.slice(0, 300) });
+                if (res.status === 404) {
+                    console.warn(`🟥 404 at ${endpoint} – trying next candidate`);
+                    continue; // try next
+                } else {
+                    console.warn(`🟧 Non-OK (${statusInfo}) at ${endpoint}, continuing...`);
+                    continue;
+                }
+            }
+            // Parse JSON
+            let json;
+            try { json = await res.json(); } catch (e) {
+                attemptLogs.push({ endpoint, status: statusInfo, body: 'Invalid JSON' });
+                continue;
+            }
+            attemptLogs.push({ endpoint, status: statusInfo, body: 'OK', keys: Object.keys(json) });
+            const normalized = normalizeRadioData(json);
+            if (normalized) {
+                console.log('✅ Radio config loaded from:', endpoint, '\n🔑 Keys:', Object.keys(json));
+                return { ...normalized, sourceEndpoint: endpoint };
+            } else {
+                console.warn(`⚠️ Endpoint ${endpoint} returned JSON but no usable streamUrl. Keys:`, Object.keys(json));
+            }
+        } catch (err) {
+            attemptLogs.push({ endpoint, error: err.message });
+            console.warn(`❌ Error fetching ${endpoint}:`, err.message);
+            continue;
         }
-        
-        // Return null to trigger fallback data
-        return null;
     }
+
+    console.error('🚫 All radio endpoint attempts failed. Summary below:');
+    console.table ? console.table(attemptLogs) : console.log(attemptLogs);
+    console.warn('🛠  Troubleshooting tips:');
+    console.warn('1. Confirm the correct radio API URL in server routes.');
+    console.warn('2. If the working “invoke” method is POST, expose a GET endpoint or adjust this client to POST.');
+    console.warn('3. Ensure CORS allows the Expo dev origin.');
+    console.warn('4. Return JSON with a top-level streamUrl field.');
+    console.warn('5. Sample minimal JSON: { "streamUrl": "https://example.com/live.mp3", "title": "5WH Live" }');
+
+    return null; // triggers fallback player
 };
 
 const fetchLiveStreams = async (queryParams = {}) => {

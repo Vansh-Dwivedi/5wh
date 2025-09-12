@@ -74,7 +74,7 @@ The 5WH News Platform now automatically resizes **ALL uploaded images to exactly
 4. Original dimensions and compression info logged
 
 ### 🧪 **Testing Interface**
-1. Visit **`https://5whmedia.com:5000/image-upload-test.html`**
+1. Visit **`http://5whmedia.com/image-upload-test.html`**
 2. Upload any image (any size)
 3. View processing results and statistics
 4. Compare original vs processed dimensions

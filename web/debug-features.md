@@ -1,8 +1,8 @@
 # 5WH Media Application - Feature Debug Report
 
 ## Application Status
-- ✅ **Client Application**: Running on https://5whmedia.com:5000
-- ✅ **Server Application**: Running on https://5whmedia.com:5000  
+- ✅ **Client Application**: Running on http://5whmedia.com
+- ✅ **Server Application**: Running on http://5whmedia.com  
 - ✅ **MongoDB**: Connected successfully
 - ✅ **Environment**: .env files loaded
 - ✅ **Compilation**: No errors detected
@@ -94,19 +94,19 @@
 - Error handling for failed requests
 
 ## Test URLs
-- Homepage: https://5whmedia.com:5000/
-- Login: https://5whmedia.com:5000/login
-- Admin Dashboard: https://5whmedia.com:5000/admin/dashboard
-- Editor Dashboard: https://5whmedia.com:5000/editor/dashboard
-- News: https://5whmedia.com:5000/news
-- Videos: https://5whmedia.com:5000/videos
-- Audio: https://5whmedia.com:5000/audio
-- Live: https://5whmedia.com:5000/live
-- Opinions: https://5whmedia.com:5000/opinions
+- Homepage: http://5whmedia.com/
+- Login: http://5whmedia.com/login
+- Admin Dashboard: http://5whmedia.com/admin/dashboard
+- Editor Dashboard: http://5whmedia.com/editor/dashboard
+- News: http://5whmedia.com/news
+- Videos: http://5whmedia.com/videos
+- Audio: http://5whmedia.com/audio
+- Live: http://5whmedia.com/live
+- Opinions: http://5whmedia.com/opinions
 
 ## API Test URLs
-- News API: https://5whmedia.com:5000/api/news
-- Videos API: https://5whmedia.com:5000/api/videos
-- Podcasts API: https://5whmedia.com:5000/api/podcasts
-- Live API: https://5whmedia.com:5000/api/live
-- Mobile API: https://5whmedia.com:5000/app/fetch/news
+- News API: http://5whmedia.com/api/news
+- Videos API: http://5whmedia.com/api/videos
+- Podcasts API: http://5whmedia.com/api/podcasts
+- Live API: http://5whmedia.com/api/live
+- Mobile API: http://5whmedia.com/app/fetch/news

@@ -264,7 +264,7 @@ const EditNews = () => {
       }, 1000);
 
       return {
-        url: `https://5whmedia.com:5000${(result.image || result.video).url}`,
+        url: `http://5whmedia.com${(result.image || result.video).url}`,
         name: (result.image || result.video).name,
         size: (result.image || result.video).size,
         type: (result.image || result.video).type

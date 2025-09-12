@@ -75,7 +75,7 @@ const LifeCulturePage = () => {
   const fetchOpinions = async () => {
     try {
       setOpinionLoading(true);
-      const response = await fetch(`https://5whmedia.com:5000/api/opinions?page=${opinionPagination.current}&limit=9`);
+      const response = await fetch(`http://5whmedia.com/api/opinions?page=${opinionPagination.current}&limit=9`);
       const data = await response.json();
       
       if (data.success) {
@@ -94,7 +94,7 @@ const LifeCulturePage = () => {
 
   const fetchFeaturedOpinions = async () => {
     try {
-      const response = await fetch('https://5whmedia.com:5000/api/opinions/featured');
+      const response = await fetch('http://5whmedia.com/api/opinions/featured');
       const data = await response.json();
       
       if (data.success) {
@@ -393,7 +393,7 @@ const LifeCulturePage = () => {
                     <CardMedia
                       component="img"
                       height="100%"
-                      image={`https://5whmedia.com:5000${featuredOpinion.featuredImage}`}
+                      image={`http://5whmedia.com${featuredOpinion.featuredImage}`}
                       alt={featuredOpinion.title}
                       sx={{ 
                         minHeight: { xs: 200, md: 300 },
@@ -476,7 +476,7 @@ const LifeCulturePage = () => {
                             <CardMedia
                               component="img"
                               height="200"
-                              image={`https://5whmedia.com:5000${article.featuredImage}`}
+                              image={`http://5whmedia.com${article.featuredImage}`}
                               alt={article.title}
                               sx={{ objectFit: 'cover' }}
                             />
@@ -614,7 +614,7 @@ const LifeCulturePage = () => {
         <title>Life & Culture - 5WH Media</title>
         <meta name="description" content="Explore lifestyle, culture, traditions, and modern living stories from 5WH Media. Discover how heritage meets contemporary life." />
         <meta name="keywords" content="life, culture, lifestyle, traditions, heritage, Punjab culture, modern living" />
-        <link rel="canonical" href="https://5whmedia.com/life-culture" />
+        <link rel="canonical" href="http://5whmedia.com/life-culture" />
       </Helmet>
 
       <Container maxWidth="lg" sx={{ py: 4 }}>

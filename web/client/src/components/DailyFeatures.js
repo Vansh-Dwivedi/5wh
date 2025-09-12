@@ -11,60 +11,9 @@ import {
   Paper,
   Container
 } from '@mui/material';
-import { FormatQuote, Person, Star, OpenInNew } from '@mui/icons-material';
+import { Person, OpenInNew } from '@mui/icons-material';
 import { personOfTheDayService } from '../services/personService';
-import axios from 'axios';
-
-// Cache for API responses
-const cache = new Map();
-const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
-
-// ZenQuotes API service for fetching real quotes
-const quoteService = {
-  // Fetch quote from zenquotes.io API
-  fetchQuoteOfTheDay: async () => {
-    const cacheKey = `quote_${new Date().toDateString()}`;
-    const cachedQuote = cache.get(cacheKey);
-    
-    if (cachedQuote && Date.now() - cachedQuote.timestamp < CACHE_DURATION) {
-      return cachedQuote.data;
-    }
-
-    try {
-      const response = await axios.get('https://zenquotes.io/api/today');
-      
-      if (response.data && response.data.length > 0) {
-        const quoteData = response.data[0];
-        
-        const quote = {
-          id: `zenquote_${new Date().toDateString()}`,
-          text: quoteData.q,
-          author: quoteData.a,
-          category: 'Daily Inspiration'
-        };
-
-        // Cache the quote
-        cache.set(cacheKey, {
-          data: quote,
-          timestamp: Date.now()
-        });
-        
-        return quote;
-      } else {
-        throw new Error('No quote data received');
-      }
-    } catch (error) {
-      console.error('Error fetching quote from ZenQuotes:', error);
-      // Return error message instead of fallback
-      return {
-        id: 'error',
-        text: "Unable to load today's quote from ZenQuotes API. Please check your internet connection.",
-        author: "System Message",
-        category: "Error"
-      };
-    }
-  }
-};
+import { quotesService } from '../services/quotesService';
 
 const QuoteOfTheDay = () => {
   const [dailyQuote, setDailyQuote] = useState(null);
@@ -74,17 +23,13 @@ const QuoteOfTheDay = () => {
     const loadQuoteOfTheDay = async () => {
       try {
         setLoading(true);
-        const quote = await quoteService.fetchQuoteOfTheDay();
-        setDailyQuote(quote);
+        // Use local quotesService to ensure philosophy-only quotes
+        const enhanced = await quotesService.getEnhancedQuote();
+        setDailyQuote(enhanced);
       } catch (error) {
         console.error('Error loading quote:', error);
-        // Fallback quote
-        setDailyQuote({
-          id: 'fallback',
-          text: "The only way to do great work is to love what you do.",
-          author: "Steve Jobs",
-          category: "Motivation"
-        });
+        // Fallback to a philosophy random quote
+        setDailyQuote(quotesService.getRandomQuote());
       } finally {
         setLoading(false);
       }

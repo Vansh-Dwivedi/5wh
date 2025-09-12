@@ -75,8 +75,8 @@ export const SourceDisplay = ({ source, variant = "caption", color = "text.secon
   return filteredSource;
 };
 
-const API_BASE_URL = 'https://5whmedia.com:5000/api';
-export const MEDIA_BASE_URL = process.env.REACT_APP_MEDIA_URL || 'https://5whmedia.com:5000';
+const API_BASE_URL = 'http://5whmedia.com/api';
+export const MEDIA_BASE_URL = process.env.REACT_APP_MEDIA_URL || 'http://5whmedia.com';
 
 // Create axios instance
 const api = axios.create({
@@ -262,6 +262,22 @@ export const advertisersAPI = {
   },
   delete: (id) => api.delete(`/advertisers/${id}`),
   toggleActive: (id, isActive) => api.put(`/advertisers/${id}`, { isActive })
+};
+
+// Blog posts (multi-tab: lifestyle, opinion, culture, health, history)
+export const blogsAPI = {
+  listPublic: (tab, params={}) => api.get('/blogs', { params: { tab, ...params } }),
+  getPublic: (slug) => api.get(`/blogs/${slug}`),
+  create: (formData) => {
+    const cfg = formData instanceof FormData ? { headers: { 'Content-Type': undefined } } : {};
+    return api.post('/blogs', formData, cfg);
+  },
+  update: (id, formData) => {
+    const cfg = formData instanceof FormData ? { headers: { 'Content-Type': undefined } } : {};
+    return api.put(`/blogs/${id}`, formData, cfg);
+  },
+  delete: (id) => api.delete(`/blogs/${id}`),
+  listAdmin: (params={}) => api.get('/blogs/admin/all', { params })
 };
 
 export default api;

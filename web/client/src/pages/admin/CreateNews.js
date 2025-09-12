@@ -260,7 +260,7 @@ const CreateNews = () => {
       }, 1000);
 
       return {
-        url: `https://5whmedia.com:5000${(result.image || result.video).url}`,
+        url: `http://5whmedia.com${(result.image || result.video).url}`,
         name: (result.image || result.video).name,
         size: (result.image || result.video).size,
         type: (result.image || result.video).type
@@ -308,7 +308,7 @@ const CreateNews = () => {
           metaTitle: value,
           metaDescription: prev.excerpt || value.substring(0, 160),
           socialTitle: value,
-          canonicalUrl: `https://5whmedia.com/news/${slug}`
+          canonicalUrl: `http://5whmedia.com/news/${slug}`
         }
       }));
     }

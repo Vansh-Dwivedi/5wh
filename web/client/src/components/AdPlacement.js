@@ -20,7 +20,7 @@ const AdPlacement = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `https://5whmedia.com:5000/api/advertisers?active=true&adType=${adType}&placement=${placement}`
+        `http://5whmedia.com/api/advertisers?active=true&adType=${adType}&placement=${placement}`
       );
       const data = await response.json();
       
@@ -37,7 +37,7 @@ const AdPlacement = ({
   const handleAdClick = async (ad) => {
     try {
       // Track click
-      await fetch(`https://5whmedia.com:5000/api/advertisers/${ad._id}/click`, {
+      await fetch(`http://5whmedia.com/api/advertisers/${ad._id}/click`, {
         method: 'POST'
       });
       
@@ -146,7 +146,7 @@ const AdPlacement = ({
         
         // Ensure URL is absolute for proper loading
         if (logoUrl && !logoUrl.startsWith('http')) {
-          logoUrl = `https://5whmedia.com:5000${logoUrl}`;
+          logoUrl = `http://5whmedia.com${logoUrl}`;
         }
         
         console.log('Ad data:', ad); // Debug log

@@ -252,7 +252,7 @@ const OpinionPage = () => {
                           <CardMedia
                             component="img"
                             height="100%"
-                            image={`https://5whmedia.com:5000${featuredArticle.featuredImage}`}
+                            image={`http://5whmedia.com${featuredArticle.featuredImage}`}
                             alt={featuredArticle.title}
                             sx={{ 
                               minHeight: { xs: 200, md: 300 },
@@ -317,7 +317,7 @@ const OpinionPage = () => {
                               <CardMedia
                                 component="img"
                                 height="200"
-                                image={`https://5whmedia.com:5000${article.featuredImage}`}
+                                image={`http://5whmedia.com${article.featuredImage}`}
                                 alt={article.title}
                                 sx={{ objectFit: 'cover' }}
                               />

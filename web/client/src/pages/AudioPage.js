@@ -180,7 +180,7 @@ const AudioPage = () => {
                       <CardMedia
                         component="img"
                         height="200"
-                        image={`https://5whmedia.com:5000${podcast.thumbnail.url}`}
+                        image={`http://5whmedia.com${podcast.thumbnail.url}`}
                         alt={podcast.thumbnail?.alt || podcast.title}
                         onError={(e) => {
                           e.target.style.display = 'none';
@@ -304,10 +304,10 @@ const AudioPage = () => {
                             e.target.style.display = 'none';
                           }}
                         >
-                          <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/mpeg" />
-                          <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/mp4" />
-                          <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/wav" />
-                          <source src={`https://5whmedia.com:5000${podcast.audioUrl}`} type="audio/ogg" />
+                          <source src={`http://5whmedia.com${podcast.audioUrl}`} type="audio/mpeg" />
+                          <source src={`http://5whmedia.com${podcast.audioUrl}`} type="audio/mp4" />
+                          <source src={`http://5whmedia.com${podcast.audioUrl}`} type="audio/wav" />
+                          <source src={`http://5whmedia.com${podcast.audioUrl}`} type="audio/ogg" />
                           Your browser does not support the audio element.
                         </audio>
                       </Box>

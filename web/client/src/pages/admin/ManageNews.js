@@ -299,7 +299,7 @@ const ManageNews = () => {
                           component="img"
                           src={article.featuredImage.url.startsWith('http') 
                             ? article.featuredImage.url 
-                            : `https://5whmedia.com:5000${article.featuredImage.url}`}
+                            : `http://5whmedia.com${article.featuredImage.url}`}
                           alt={article.title}
                           sx={{ 
                             width: 60, 

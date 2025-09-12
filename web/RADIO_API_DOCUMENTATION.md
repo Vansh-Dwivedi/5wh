@@ -14,7 +14,7 @@ Returns the current radio configuration for the application.
 ```json
 {
   "data": {
-    "streamUrl": "https://5whmedia.com/radio/stream",
+    "streamUrl": "http://5whmedia.com/radio/stream",
     "title": "5WH Radio",
     "artist": "Live Programming",
     "isLive": true,
@@ -37,7 +37,7 @@ Returns the full radio configuration including all fields.
   "success": true,
   "data": {
     "_id": "...",
-    "streamUrl": "https://5whmedia.com/radio/stream",
+    "streamUrl": "http://5whmedia.com/radio/stream",
     "title": "5WH Radio",
     "currentShow": "Morning Show",
     "currentArtist": "Host Name",
@@ -171,12 +171,12 @@ Authorization: Bearer your-jwt-token
 
 1. **Get public radio config:**
 ```bash
-curl http://localhost:5000/api/app/radio
+curl http://5whmedia.com/api/app/radio
 ```
 
 2. **Update radio config (admin):**
 ```bash
-curl -X PUT http://localhost:5000/api/admin/radio-config \
+curl -X PUT http://5whmedia.com/api/admin/radio-config \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
@@ -188,7 +188,7 @@ curl -X PUT http://localhost:5000/api/admin/radio-config \
 
 3. **Add schedule:**
 ```bash
-curl -X POST http://localhost:5000/api/admin/radio-config/schedule \
+curl -X POST http://5whmedia.com/api/admin/radio-config/schedule \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{

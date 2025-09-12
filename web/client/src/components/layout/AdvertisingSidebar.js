@@ -20,7 +20,7 @@ const AdvertisingSidebar = ({ placement = 'right', sx = {} }) => {
 
   const fetchAdvertisers = async () => {
     try {
-      const url = `https://5whmedia.com:5000/api/advertisers?active=true&adType=sidebar&placement=${placement}`;
+      const url = `http://5whmedia.com/api/advertisers?active=true&adType=sidebar&placement=${placement}`;
       console.log(`Fetching ${placement} sidebar ads from:`, url);
       const response = await fetch(url);
       if (response.ok) {
@@ -41,7 +41,7 @@ const AdvertisingSidebar = ({ placement = 'right', sx = {} }) => {
   const handleAdvertiserClick = async (advertiser) => {
     try {
       // Track click
-      await fetch(`https://5whmedia.com:5000/api/advertisers/${advertiser._id}/click`, {
+      await fetch(`http://5whmedia.com/api/advertisers/${advertiser._id}/click`, {
         method: 'POST'
       });
 
@@ -60,7 +60,7 @@ const AdvertisingSidebar = ({ placement = 'right', sx = {} }) => {
 
   const handleAdvertiserImpression = async (advertiserId) => {
     try {
-      await fetch(`https://5whmedia.com:5000/api/advertisers/${advertiserId}/impression`, {
+      await fetch(`http://5whmedia.com/api/advertisers/${advertiserId}/impression`, {
         method: 'POST'
       });
     } catch (error) {
@@ -175,7 +175,7 @@ const AdvertisingSidebar = ({ placement = 'right', sx = {} }) => {
                   src={
                     advertiser.logo.url.startsWith('http') 
                       ? advertiser.logo.url 
-                      : `https://5whmedia.com:5000${advertiser.logo.url}`
+                      : `http://5whmedia.com${advertiser.logo.url}`
                   }
                   alt={advertiser.logo?.alt || advertiser.name}
                   sx={{

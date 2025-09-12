@@ -210,6 +210,22 @@
         
         <div class="content">
             <div id="alertContainer"></div>
+            <div class="section" style="margin-top:-10px;margin-bottom:25px;">
+                <h2 style="margin-bottom:10px;">Authentication Token</h2>
+                <div class="form-row" style="align-items:flex-end;gap:10px;flex-wrap:wrap;">
+                    <div class="form-group" style="flex:1;min-width:260px;">
+                        <label for="authToken">Paste Admin JWT (stored locally)</label>
+                        <input type="text" id="authToken" placeholder="eyJhbGciOi..." autocomplete="off" />
+                    </div>
+                    <div class="form-group" style="width:auto;">
+                        <button type="button" class="btn" id="saveTokenBtn">Save Token</button>
+                    </div>
+                    <div class="form-group" style="width:auto;">
+                        <button type="button" class="btn btn-secondary" id="clearTokenBtn" style="background:#6c757d;">Clear Token</button>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:#555;margin-top:4px;">The GET /api/admin/radio-config endpoint requires an Admin or Editor JWT. Saving here sets localStorage.authToken. If you don't have one, login via the main admin panel and copy the token.</p>
+            </div>
             
             <div class="section">
                 <h2>Current Configuration</h2>
@@ -278,6 +294,34 @@
     <script>
         let currentConfig = null;
 
+        // Initialize token input from localStorage
+        const tokenInputEl = () => document.getElementById('authToken');
+        document.addEventListener('DOMContentLoaded', () => {
+            const existing = localStorage.getItem('authToken');
+            if (existing) {
+                tokenInputEl().value = existing;
+            }
+        });
+
+        // Save token button
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'saveTokenBtn') {
+                const val = tokenInputEl().value.trim();
+                if (!val) {
+                    showAlert('Token empty – nothing saved', 'error');
+                    return;
+                }
+                localStorage.setItem('authToken', val);
+                showAlert('Token saved. Reloading config...', 'success');
+                setTimeout(loadCurrentConfig, 500);
+            }
+            if (e.target && e.target.id === 'clearTokenBtn') {
+                localStorage.removeItem('authToken');
+                tokenInputEl().value = '';
+                showAlert('Token cleared from storage', 'success');
+            }
+        });
+
         // Show alert message
         function showAlert(message, type = 'success') {
             const alertContainer = document.getElementById('alertContainer');
@@ -308,8 +352,10 @@
                     currentConfig = data.data;
                     displayCurrentConfig(currentConfig);
                     populateForm(currentConfig);
+                } else if (response.status === 401 || response.status === 403) {
+                    throw new Error('Unauthorized. Provide a valid admin/editor JWT above.');
                 } else {
-                    throw new Error('Failed to load configuration');
+                    throw new Error('Failed to load configuration (status ' + response.status + ')');
                 }
             } catch (error) {
                 document.getElementById('currentConfig').innerHTML = 

@@ -22,8 +22,8 @@ import OpinionPage from './pages/OpinionPage';
 import OpinionDetailPage from './pages/OpinionDetailPage';
 import LifeCulturePage from './pages/LifeCulturePage';
 import LifeCultureDetailPage from './pages/LifeCultureDetailPage';
-// import SantokhSinghDhirPage from './pages/SantokhSinghDhirPage';
-// import DhirStoryPage from './pages/DhirStoryPage';
+import SantokhSinghDhirPage from './pages/SantokhSinghDhirPage';
+import DhirStoryPage from './pages/DhirStoryPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import AdminLogin from './pages/admin/AdminLogin';
@@ -72,8 +72,8 @@ function App() {
                     <Route path="/life-culture" element={<LifeCulturePage />} />
                     <Route path="/life-culture/:slug" element={<LifeCultureDetailPage />} />
                     <Route path="/opinion/:slug" element={<OpinionDetailPage />} />
-                    {/* <Route path="/santokh-singh-dhir" element={<SantokhSinghDhirPage />} /> */}
-                    {/* <Route path="/santokh-singh-dhir/:slug" element={<DhirStoryPage />} /> */}
+                    <Route path="/santokh-singh-dhir" element={<SantokhSinghDhirPage />} />
+                    <Route path="/santokh-singh-dhir/:slug" element={<DhirStoryPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/login" element={<AdminLogin />} />

@@ -12,6 +12,11 @@ const config = require('./config/config');
 const app = express();
 app.set('trust proxy', 1); // Tip: needed if behind reverse proxy / load balancer
 
+// Mongoose global settings to improve DX and fail fast when DB is down
+mongoose.set('strictQuery', true);
+// Disable buffering so route handlers fail immediately instead of timing out after 10s
+mongoose.set('bufferCommands', false);
+
 // Lightweight request id (improves log traceability without external deps)
 app.use((req, res, next) => {
   req.id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
@@ -68,9 +73,9 @@ const corsOptions = {
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'https://5whmedia.com:5000',
       'http://5whmedia.com',
-      'https://5whmedia.com',
+      'http://5whmedia.com',
+      'http://5whmedia.com',
       'http://www.5whmedia.com',
       'https://www.5whmedia.com',
       'http://localhost:3000',
@@ -158,26 +163,65 @@ app.use('/uploads', (req, res, next) => {
 app.use('/test-images', express.static(path.join(__dirname, 'test-images')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB connection
-mongoose.connect(config.mongodbUri)
-.then(() => {
-  console.log('Connected to MongoDB');
-  
-  // Start enhanced news scheduler (RSS + Web Scraping) after successful database connection
-  const { startNewsScheduler } = require('./services/rssService');
-  startNewsScheduler();
-  // Start content publish scheduler (scheduled -> published)
-  const { startScheduler } = require('./services/schedulerService');
-  startScheduler();
-})
-.catch((err) => {
-  console.log('MongoDB connection error:', err.message);
-  console.log('Note: Please ensure MongoDB is running on your system');
+// MongoDB connection with fail-fast options and retry
+const connectWithRetry = async (attempt = 1) => {
+  const maxAttempts = 10;
+  const delayMs = 3000;
+  try {
+    console.log(`Connecting to MongoDB (attempt ${attempt}) ...`);
+    await mongoose.connect(config.mongodbUri, {
+      serverSelectionTimeoutMS: 5000, // fail fast if server selection fails
+      socketTimeoutMS: 20000, // allow in-flight operations some time
+      connectTimeoutMS: 10000,
+      family: 4,
+    });
+    console.log('Connected to MongoDB');
+
+    // Start enhanced news scheduler (RSS + Web Scraping) after successful database connection
+    const { startNewsScheduler } = require('./services/rssService');
+    startNewsScheduler();
+    // Start content publish scheduler (scheduled -> published)
+    const { startScheduler } = require('./services/schedulerService');
+    startScheduler();
+
+    // Start the HTTP server only after successful DB connection
+    startHttpServer();
+  } catch (err) {
+    console.log('MongoDB connection error:', err.message);
+    if (attempt < maxAttempts) {
+      console.log(`Retrying MongoDB connection in ${Math.round(delayMs/1000)}s ...`);
+      setTimeout(() => connectWithRetry(attempt + 1), delayMs);
+    } else {
+      console.error('Exceeded maximum MongoDB connection attempts. Exiting.');
+      process.exit(1);
+    }
+  }
+};
+
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err.message);
+});
+mongoose.connection.on('disconnected', () => {
+  console.warn('Mongoose disconnected');
+});
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected');
 });
 
 // Health / readiness probe (Tip: used by container orchestrators & uptime monitors)
 app.get('/healthz', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime(), timestamp: Date.now(), env: config.env });
+});
+
+// DB health endpoint for quick diagnostics
+app.get('/health/db', (req, res) => {
+  const state = mongoose.connection.readyState;
+  const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+  res.json({
+    mongodbUri: config.mongodbUri,
+    readyState: state,
+    stateText: states[state] || 'unknown'
+  });
 });
 
 // Routes
@@ -189,6 +233,7 @@ app.use('/api/podcasts', require('./routes/podcasts'));
 app.use('/api/videos', require('./routes/videos'));
 app.use('/api/opinions', require('./routes/opinions')); // Opinion routes
 app.use('/api/lifeculture', require('./routes/lifeculture.clean')); // Life & Culture routes
+app.use('/api/blogs', require('./routes/blogs')); // Unified blog posts (tabs)
 app.use('/api/home', require('./routes/home')); // Aggregated homepage content
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/upload', require('./routes/upload'));
@@ -262,9 +307,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = config.port;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Mobile API available at: http://localhost:${PORT}/app/fetch/news`);
-  console.log(`Web API available at: http://localhost:${PORT}/api/news`);
-});
+const startHttpServer = () => {
+  const PORT = config.port;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Mobile API available at: http://localhost:${PORT}/app/fetch/news`);
+    console.log(`Web API available at: http://localhost:${PORT}/api/news`);
+  });
+};
+
+// Kick off DB connection (and then boot the server on success)
+connectWithRetry();

@@ -31,6 +31,7 @@ import EditOpinion from './EditOpinion';
 import PushNotificationManager from './PushNotificationManager';
 import NotificationHistory from './NotificationHistory';
 import AuditLogsPage from './AuditLogsPage';
+import CreateBlogPost from './CreateBlogPost';
 
 // Placeholder component for create/edit pages
 const ComingSoon = ({ title, backUrl }) => {
@@ -138,6 +139,8 @@ const AdminRouter = () => {
       <Route path="/podcasts/create" element={<CreatePodcast />} />
       <Route path="/videos/create" element={<CreateVideo />} />
       <Route path="/opinions/create" element={<CreateOpinion />} />
+  <Route path="/blogs/create" element={<CreateBlogPost />} />
+  <Route path="/blogs/edit/:id" element={<CreateBlogPost />} />
       
       {/* Edit routes */}
       <Route path="/news/edit/:id" element={<EditNews />} />
